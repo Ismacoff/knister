@@ -8,15 +8,23 @@ button,input{font:inherit}button{cursor:pointer;touch-action:manipulation}.app{m
 .dice-overlay.active{display:block}
 .fly-die{
   position:absolute;left:0;top:0;width:68px;height:68px;border-radius:17px;opacity:0;
-  background:linear-gradient(145deg,#fff 0%,#fbfaf5 55%,#e8ebe6 100%);
-  border:1px solid rgba(49,71,68,.22);
-  box-shadow:inset 4px 4px 8px rgba(255,255,255,.96),inset -5px -6px 11px rgba(46,65,62,.10),0 15px 25px rgba(31,52,49,.25);
+  background:
+    radial-gradient(circle at 27% 18%,rgba(255,255,255,.48) 0 5%,transparent 22%),
+    linear-gradient(145deg,rgba(255,93,105,.88) 0%,rgba(206,20,42,.94) 43%,rgba(119,2,25,.96) 100%);
+  border:1px solid rgba(255,205,210,.72);
+  box-shadow:
+    inset 5px 5px 10px rgba(255,255,255,.32),
+    inset -7px -8px 14px rgba(72,0,16,.42),
+    inset 0 0 18px rgba(255,72,88,.28),
+    0 15px 25px rgba(104,0,22,.34);
+  backdrop-filter:blur(2px) saturate(1.25);-webkit-backdrop-filter:blur(2px) saturate(1.25);
   transform-origin:50% 50%;will-change:transform;backface-visibility:hidden
 }
 .dice-overlay.active .fly-die{opacity:1}
-.fly-die::before{content:"";position:absolute;inset:3px;border-radius:14px;background:linear-gradient(135deg,rgba(255,255,255,.7),transparent 45%);pointer-events:none}
-.fly-shadow{position:absolute;left:50%;bottom:-16px;width:60px;height:17px;transform:translateX(-50%);border-radius:50%;background:radial-gradient(ellipse,rgba(28,43,41,.38),transparent 70%);filter:blur(2px)}
-.pip{position:absolute;width:11px;height:11px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#47605f 0,#233637 52%,#142425 100%);box-shadow:inset 0 1px 1px rgba(255,255,255,.28),0 1px 1px rgba(0,0,0,.12);opacity:0}
+.fly-die::before{content:"";position:absolute;z-index:1;inset:3px;border-radius:14px;background:linear-gradient(135deg,rgba(255,255,255,.52),transparent 38%,rgba(255,255,255,.08) 70%,rgba(255,190,198,.18));pointer-events:none}
+.fly-die::after{content:"";position:absolute;z-index:1;left:10px;right:13px;top:8px;height:13px;border-radius:50%;background:linear-gradient(180deg,rgba(255,255,255,.62),rgba(255,255,255,0));filter:blur(.4px);pointer-events:none}
+.fly-shadow{position:absolute;left:50%;bottom:-16px;width:60px;height:17px;transform:translateX(-50%);border-radius:50%;background:radial-gradient(ellipse,rgba(105,0,23,.43),transparent 70%);filter:blur(2px)}
+.pip{position:absolute;z-index:2;width:11px;height:11px;border-radius:50%;background:radial-gradient(circle at 36% 30%,#fff 0 30%,#f7f7f7 56%,#d9e0e2 100%);box-shadow:inset 0 1px 1px rgba(255,255,255,.9),0 1px 3px rgba(72,0,15,.48),0 0 5px rgba(255,255,255,.22);opacity:0}
 .pip.center{left:50%;top:50%;transform:translate(-50%,-50%)}
 .pip.tl{left:17px;top:17px}.pip.tr{right:17px;top:17px}
 .pip.ml{left:17px;top:50%;transform:translateY(-50%)}.pip.mr{right:17px;top:50%;transform:translateY(-50%)}
