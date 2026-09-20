@@ -60,7 +60,33 @@
 <div class="card board-card">
 <div class="section-title"><div><div class="label">Dein Spielblock</div><h2 id="gameName">Spieler</h2></div><small id="turnLabel">Wurf 0 / 25</small></div>
 <div class="bar"><span id="progress" style="width:0%"></span></div>
-<div id="board" class="grid"></div>
+<div class="board-wrap">
+  <div id="board" class="grid"></div>
+  <div id="boardDiceOverlay" class="board-dice-overlay" aria-hidden="true">
+    <div class="roll-cube-wrap roll-a">
+      <div id="rollDie1" class="cube3d">
+        <span class="cube-face cf-front" data-face="1"></span>
+        <span class="cube-face cf-back" data-face="6"></span>
+        <span class="cube-face cf-right" data-face="3"></span>
+        <span class="cube-face cf-left" data-face="4"></span>
+        <span class="cube-face cf-top" data-face="2"></span>
+        <span class="cube-face cf-bottom" data-face="5"></span>
+      </div>
+      <span class="roll-shadow"></span>
+    </div>
+    <div class="roll-cube-wrap roll-b">
+      <div id="rollDie2" class="cube3d">
+        <span class="cube-face cf-front" data-face="1"></span>
+        <span class="cube-face cf-back" data-face="6"></span>
+        <span class="cube-face cf-right" data-face="3"></span>
+        <span class="cube-face cf-left" data-face="4"></span>
+        <span class="cube-face cf-top" data-face="2"></span>
+        <span class="cube-face cf-bottom" data-face="5"></span>
+      </div>
+      <span class="roll-shadow"></span>
+    </div>
+  </div>
+</div>
 <div class="scoreline">
 <div class="scorebox"><small>Zeilen</small><b id="sRows">0</b></div>
 <div class="scorebox"><small>Spalten</small><b id="sCols">0</b></div>
@@ -72,13 +98,9 @@
 <div id="winnerBox" class="winner hide"></div>
 <div class="turnbox">
 <div class="label">Aktueller Wurf</div>
-<div id="diceStage" class="dice-stage" aria-label="Zwei dreidimensionale Würfel">
-  <div class="die-wrap die-wrap-a"><div id="die1" class="die3d v1" aria-label="Würfel 1">
-    <span class="face front">⚀</span><span class="face back">⚅</span><span class="face right">⚂</span><span class="face left">⚃</span><span class="face top">⚁</span><span class="face bottom">⚄</span>
-  </div><span class="dice-shadow"></span></div>
-  <div class="die-wrap die-wrap-b"><div id="die2" class="die3d v1" aria-label="Würfel 2">
-    <span class="face front">⚀</span><span class="face back">⚅</span><span class="face right">⚂</span><span class="face left">⚃</span><span class="face top">⚁</span><span class="face bottom">⚄</span>
-  </div><span class="dice-shadow"></span></div>
+<div id="diceStage" class="dice-stage compact" aria-label="Gewürfeltes Ergebnis">
+  <div id="die1" class="result-die" data-value="1" aria-label="Würfel 1"></div>
+  <div id="die2" class="result-die" data-value="1" aria-label="Würfel 2"></div>
 </div>
 <div class="sumline"><span>Summe</span><div id="currentRoll" class="big">–</div></div>
 <div id="turnHint" class="mini">Der Spielleiter würfelt zuerst.</div>
