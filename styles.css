@@ -199,3 +199,80 @@ button,input{font:inherit}button{cursor:pointer;touch-action:manipulation}.app{m
 @media(max-width:760px){
  .roller-status{padding:5px 7px;gap:5px}.roller-status b{font-size:.6rem}.roller-status span{width:6px;height:6px}
 }
+
+/* ===== Neue ruhige Spielelounge ===== */
+.top-actions{display:flex;align-items:center;gap:8px}
+.settings-btn{width:39px;height:39px;border-radius:13px;border:1px solid var(--line);background:rgba(255,255,255,.82);color:#435957;font-size:1rem;display:grid;place-items:center;box-shadow:0 5px 13px rgba(44,70,66,.07)}
+.settings-btn:active{transform:translateY(1px)}
+.lounge-home{display:grid;grid-template-columns:minmax(300px,.86fr) minmax(390px,1.14fr);gap:18px;align-items:stretch}
+.welcome-panel{position:relative;overflow:hidden;min-height:560px;padding:32px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;background:
+ radial-gradient(circle at 50% 38%,rgba(215,52,70,.18),transparent 33%),
+ linear-gradient(150deg,#fffdfa,#f4eee1)}
+.welcome-panel::before{content:"";position:absolute;inset:auto -80px -105px;width:290px;height:290px;border-radius:50%;background:rgba(57,121,110,.075)}
+.welcome-badge{position:absolute;left:25px;top:23px;display:flex;align-items:center;gap:7px;padding:7px 10px;border-radius:999px;background:rgba(255,255,255,.8);border:1px solid rgba(97,128,120,.18);font-size:.62rem;font-weight:850;letter-spacing:1.15px;text-transform:uppercase;color:#60736f}
+.welcome-badge span{width:7px;height:7px;border-radius:50%;background:#48a17f;box-shadow:0 0 0 4px rgba(72,161,127,.12)}
+.welcome-icon{position:relative;z-index:1;width:min(78%,300px);border-radius:28%;filter:drop-shadow(0 25px 27px rgba(94,4,28,.25));margin:10px 0 22px}
+.welcome-copy{position:relative;z-index:1}.welcome-copy h1{margin:0;font-size:3.2rem;line-height:.95;letter-spacing:-.065em;color:#203638}.welcome-copy p{margin:9px 0 0;font-family:Georgia,"Times New Roman",serif;font-style:italic;font-size:1.04rem;color:#c95143}
+.welcome-features{position:relative;z-index:1;display:flex;flex-wrap:wrap;justify-content:center;gap:7px;margin-top:24px}
+.welcome-features span{padding:7px 9px;border-radius:999px;background:rgba(255,255,255,.78);border:1px solid rgba(98,129,120,.16);font-size:.65rem;font-weight:750;color:#5e706d}
+.welcome-features b{color:#48a17f;font-size:.72rem}
+.entry-panel{padding:38px;display:flex;flex-direction:column;justify-content:center;background:rgba(255,255,255,.94)}
+.entry-heading{margin-bottom:25px}.entry-heading .label{margin-bottom:7px}.entry-heading h2{margin:0;font-size:2rem;letter-spacing:-.04em;color:#203638}.entry-heading p{margin:9px 0 0;color:#72817f;line-height:1.55;font-size:.88rem;max-width:34rem}
+.entry-panel>.label{margin:0 0 7px}.entry-panel .field{min-height:55px;background:#fff}
+.create-room-btn{margin-top:11px;min-height:55px;background:linear-gradient(135deg,#df7660,#c74d40);box-shadow:0 10px 21px rgba(190,74,57,.18);font-size:.98rem}
+.create-room-btn span{font-size:1.25rem;margin-right:5px}
+.entry-divider{display:flex;align-items:center;gap:10px;margin:21px 0;color:#94a09e;font-size:.67rem;text-transform:uppercase;letter-spacing:1.15px;font-weight:800}
+.entry-divider::before,.entry-divider::after{content:"";height:1px;background:#dde4e1;flex:1}
+.join-row{display:grid;grid-template-columns:minmax(0,1fr) 132px;gap:8px}.join-row .field.code{font-size:1.12rem}.join-row .btn{min-height:55px}
+.privacy-note{display:flex;align-items:center;justify-content:center;gap:7px;margin-top:17px;color:#7d8b89;font-size:.7rem}.privacy-note span{color:#439276;font-weight:900}
+
+/* ===== Themen-Auswahl ===== */
+.modal-open{overflow:hidden}
+.theme-modal{position:fixed;z-index:200;inset:0;display:grid;place-items:center;padding:17px;background:rgba(18,30,29,.48);backdrop-filter:blur(10px)}
+.theme-sheet{width:min(100%,560px);max-height:92vh;overflow:auto;border-radius:25px;padding:23px;background:#fffdf9;border:1px solid rgba(255,255,255,.8);box-shadow:0 30px 80px rgba(20,35,33,.28)}
+.theme-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}.theme-head h2{margin:0;font-size:1.45rem;letter-spacing:-.035em}.modal-close{width:38px;height:38px;border-radius:12px;border:1px solid var(--line);background:#fff;color:#536462;font-size:1.5rem;line-height:1}
+.theme-intro{margin:8px 0 18px;color:#748380;font-size:.8rem;line-height:1.5}
+.theme-options{display:grid;gap:9px}.theme-choice{width:100%;display:grid;grid-template-columns:82px 1fr 26px;align-items:center;gap:13px;padding:10px;text-align:left;border:1px solid #dae2df;border-radius:17px;background:#fff;color:#263b3d}
+.theme-choice>span:nth-child(2) b{display:block;font-size:.95rem}.theme-choice>span:nth-child(2) small{display:block;color:#7c8b88;font-size:.7rem;margin-top:3px}.theme-choice em{width:23px;height:23px;border-radius:50%;display:grid;place-items:center;background:#d36f55;color:#fff;font-style:normal;font-weight:900;opacity:0}
+.theme-choice.selected{border-color:#d36f55;box-shadow:0 0 0 3px rgba(211,111,85,.1)}.theme-choice.selected em{opacity:1}
+.theme-preview{height:61px;border-radius:12px;display:grid;grid-template-columns:repeat(3,1fr);align-items:center;gap:4px;padding:8px}.theme-preview i{height:31px;border-radius:6px}
+.preview-classic{background:#f5efe2}.preview-classic i{background:#fff}.preview-classic i:nth-child(2){background:#d76f57}
+.preview-space{background:linear-gradient(145deg,#09142f,#231151)}.preview-space i{background:#152b59;border:1px solid #3ee9db}.preview-space i:nth-child(2){background:#7c3dff}
+.preview-nature{background:linear-gradient(145deg,#e9f2df,#c9dbbd)}.preview-nature i{background:#f7f1df}.preview-nature i:nth-child(2){background:#56816a}
+
+/* ===== Spielthema: Space ===== */
+body[data-theme="space"] #game{color:#eef6ff}
+body[data-theme="space"] #game .card{background:linear-gradient(155deg,rgba(8,18,43,.96),rgba(22,13,55,.95));border-color:rgba(78,221,223,.26);box-shadow:0 18px 45px rgba(5,8,25,.32)}
+body[data-theme="space"] #game .label,body[data-theme="space"] #game .mini,body[data-theme="space"] #game .section-title small,body[data-theme="space"] #game .scorebox small{color:#93a9c9}
+body[data-theme="space"] #game .bar{background:#192a4a}body[data-theme="space"] #game .bar span{background:linear-gradient(90deg,#41ead4,#8d52ff)}
+body[data-theme="space"] #game .turnbox{background:linear-gradient(135deg,rgba(26,54,92,.95),rgba(64,27,104,.9))}
+body[data-theme="space"] #game .roller-status{background:rgba(7,16,39,.58);border-color:rgba(74,223,218,.25);color:#b9cce8}
+body[data-theme="space"] #game .roller-status.mine{background:linear-gradient(135deg,rgba(46,230,210,.18),rgba(133,76,255,.23));color:#7ff7e8;border-color:rgba(86,240,221,.42)}
+body[data-theme="space"] #game .cell{background:linear-gradient(145deg,#16294e,#111d3b);border-color:#32598a;color:#f4f8ff;box-shadow:inset 0 0 12px rgba(71,210,221,.05),0 2px 0 #071025}
+body[data-theme="space"] #game .cell.diag{background:linear-gradient(145deg,#2a2359,#172854)}body[data-theme="space"] #game .cell.ready{border-color:#6ef8e6;box-shadow:0 0 14px rgba(59,231,212,.25)}
+body[data-theme="space"] #game .scorebox,body[data-theme="space"] #game .row-scores>div,body[data-theme="space"] #game .column-scores>div,body[data-theme="space"] #game .diagonal-scores>div{background:#101f3e;border-color:#2c4e78;color:#eaf5ff;box-shadow:none}
+body[data-theme="space"] #game .rules-card{background:#0f1d39;border-color:#2a4c77}body[data-theme="space"] #game .rules-content,body[data-theme="space"] #game .rules-card summary small{color:#9aafd0}
+body[data-theme="space"] #game .rules-grid span{background:#152746;border-color:#2a4c77}body[data-theme="space"] #game .standing{border-color:#263c61}
+body[data-theme="space"] #game .btn:not(.dice-btn){background:#142746;border-color:#345780;color:#e8f4ff}
+
+/* ===== Spielthema: Natur ===== */
+body[data-theme="nature"] #game{color:#30483c}
+body[data-theme="nature"] #game .card{background:linear-gradient(155deg,#fbfff7,#eef5e8);border-color:#bdceb9;box-shadow:0 17px 40px rgba(58,89,66,.13)}
+body[data-theme="nature"] #game .turnbox{background:linear-gradient(135deg,#dcebd5,#edf4dc)}
+body[data-theme="nature"] #game .roller-status{background:rgba(255,255,255,.55);border-color:#abc4a8;color:#557060}
+body[data-theme="nature"] #game .roller-status.mine{background:linear-gradient(135deg,#fff3c8,#e5f0ce);color:#496e50;border-color:#9dbb92}
+body[data-theme="nature"] #game .bar{background:#dce7d8}body[data-theme="nature"] #game .bar span{background:linear-gradient(90deg,#6a9d73,#adc875)}
+body[data-theme="nature"] #game .cell{background:linear-gradient(145deg,#fffaf0,#eee4ce);border-color:#cbbd9d;color:#3d5547;box-shadow:0 2px 0 #c9bea4}
+body[data-theme="nature"] #game .cell.diag{background:linear-gradient(145deg,#e6f1db,#d9e9cd)}body[data-theme="nature"] #game .cell.ready{border-color:#739b67;background:#f4f1cc}
+body[data-theme="nature"] #game .scorebox,body[data-theme="nature"] #game .row-scores>div,body[data-theme="nature"] #game .column-scores>div,body[data-theme="nature"] #game .diagonal-scores>div{background:linear-gradient(145deg,#f4f8ee,#e4eddc);border-color:#c0d0b9;color:#405b4b}
+body[data-theme="nature"] #game .rules-card{background:#f8fbf3;border-color:#c4d2bd}body[data-theme="nature"] #game .rules-grid span{background:#fffdf6;border-color:#d7ddcc}
+body[data-theme="nature"] #game .dice-btn{background:linear-gradient(145deg,#789d72,#486f58);border-color:#52785e;box-shadow:inset 3px 3px 7px rgba(255,255,255,.2),0 9px 18px rgba(57,91,65,.2)}
+
+/* Klassisch ist das bestehende helle Design */
+@media(max-width:760px){
+ .top-actions{gap:5px}.settings-btn{width:36px;height:36px;border-radius:12px}
+ .lounge-home{grid-template-columns:1fr;gap:11px}.welcome-panel{min-height:0;padding:24px 18px 20px}.welcome-badge{left:16px;top:15px}
+ .welcome-icon{width:168px;margin:28px 0 13px}.welcome-copy h1{font-size:2.5rem}.welcome-copy p{font-size:.92rem}.welcome-features{margin-top:15px;gap:5px}
+ .entry-panel{padding:23px 18px}.entry-heading{margin-bottom:19px}.entry-heading h2{font-size:1.65rem}.entry-heading p{font-size:.8rem}
+ .join-row{grid-template-columns:minmax(0,1fr) 108px}.join-row .btn{padding:8px}.theme-sheet{padding:18px;border-radius:21px}.theme-choice{grid-template-columns:70px 1fr 24px;gap:10px}.theme-preview{height:55px}
+}
