@@ -215,3 +215,16 @@ $('diceBtn').addEventListener('click',()=>{audioReady();rollDice()});$('undoBtn'
 const saved=localStorage.getItem('knister-name');if(saved)$('nameInput').value=saved;
 window.addEventListener('beforeunload',()=>{try{if(peer)peer.destroy()}catch(e){}});
 if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));}
+
+let deferredInstallPrompt=null;
+window.addEventListener('beforeinstallprompt',event=>{
+ event.preventDefault();deferredInstallPrompt=event;
+ if($('installBtn'))$('installBtn').classList.remove('hide');
+});
+if($('installBtn'))$('installBtn').addEventListener('click',async()=>{
+ if(!deferredInstallPrompt)return;
+ deferredInstallPrompt.prompt();
+ try{await deferredInstallPrompt.userChoice}catch(e){}
+ deferredInstallPrompt=null;$('installBtn').classList.add('hide');
+});
+window.addEventListener('appinstalled',()=>{deferredInstallPrompt=null;if($('installBtn'))$('installBtn').classList.add('hide')});
