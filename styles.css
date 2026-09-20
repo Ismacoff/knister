@@ -72,3 +72,38 @@ button,input{font:inherit}button{cursor:pointer;touch-action:manipulation}.app{m
  .board-layout{grid-template-columns:minmax(0,1fr) 35px;gap:5px}
  .row-scores{gap:6px}.row-scores>div{border-radius:9px}.row-scores small{font-size:.46rem}.row-scores b{font-size:.9rem}
 }
+
+/* Vollständige Linienwertung */
+.board-layout{grid-template-areas:"board rows" "cols blank" "diag diag";grid-template-rows:auto auto auto}
+.board-wrap{grid-area:board}.row-scores{grid-area:rows}.column-scores{grid-area:cols}.score-spacer{grid-area:blank}.diagonal-scores{grid-area:diag}
+.column-scores{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-top:0}
+.column-scores>div,.diagonal-scores>div{border:1px solid #d2ddd8;border-radius:10px;background:linear-gradient(145deg,#f8faf8,#edf3f0);display:flex;align-items:center;justify-content:center;gap:5px;min-height:38px;box-shadow:0 2px 0 #d5ddd9}
+.column-scores>div{flex-direction:column;gap:0}
+.column-scores small,.diagonal-scores small{font-size:.55rem;color:var(--muted);font-weight:800;line-height:1}
+.column-scores b,.diagonal-scores b{font-family:"Segoe Print","Comic Sans MS",cursive;font-size:1rem;line-height:1.1}
+.diagonal-scores{display:grid;grid-template-columns:repeat(2,1fr);gap:7px;margin-top:2px}
+.diagonal-scores>div{background:linear-gradient(135deg,#edf8f3,#fff3d5);border-color:#d3dfd9}
+
+/* Aufklappbare Spielregeln */
+.rules-card{margin-top:12px;border:1px solid var(--line);border-radius:16px;background:linear-gradient(145deg,#fffefb,#f3f7f4);overflow:hidden}
+.rules-card summary{list-style:none;display:grid;grid-template-columns:38px 1fr auto;align-items:center;gap:10px;padding:12px 14px;cursor:pointer}
+.rules-card summary::-webkit-details-marker{display:none}
+.rules-icon{width:34px;height:34px;border-radius:11px;display:grid;place-items:center;background:linear-gradient(145deg,#e37a62,#b94b3d);color:#fff;font-family:"Segoe Print","Comic Sans MS",cursive;font-weight:900;box-shadow:0 5px 12px rgba(185,75,61,.22)}
+.rules-card summary b{display:block;font-size:.9rem}.rules-card summary small{display:block;color:var(--muted);font-size:.67rem;margin-top:2px}
+.rules-chevron{font-size:1.3rem;color:var(--muted);transition:transform .2s}.rules-card[open] .rules-chevron{transform:rotate(180deg)}
+.rules-content{padding:0 14px 14px;color:var(--muted);font-size:.78rem;line-height:1.45}
+.rules-content p{margin:3px 0 10px}.rules-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:6px}
+.rules-grid span{display:flex;justify-content:space-between;gap:8px;background:#fff;border:1px solid var(--line);border-radius:9px;padding:7px 9px}
+.rules-grid b{color:var(--coral);font-family:"Segoe Print","Comic Sans MS",cursive}.rules-note{margin:9px 0 0!important;font-weight:800;color:var(--ink)}
+
+/* Hochwertiger Würfelknopf passend zu den roten Glaswürfeln */
+.dice-btn{display:flex;align-items:center;justify-content:center;gap:11px;background:linear-gradient(145deg,#ef6674 0%,#cf203d 48%,#8d0926 100%);border:1px solid rgba(255,205,211,.72);box-shadow:inset 3px 3px 7px rgba(255,255,255,.28),inset -4px -5px 9px rgba(81,0,18,.28),0 9px 18px rgba(139,9,38,.26);text-shadow:0 1px 2px rgba(71,0,15,.35);letter-spacing:.2px}
+.dice-btn:not(:disabled):active{transform:translateY(2px);box-shadow:inset 2px 2px 8px rgba(83,0,19,.28),0 4px 9px rgba(139,9,38,.22)}
+.roll-icon{position:relative;width:27px;height:27px;flex:0 0 27px;border-radius:8px;background:linear-gradient(145deg,rgba(255,255,255,.38),rgba(117,0,24,.18));border:1px solid rgba(255,255,255,.7);box-shadow:inset 2px 2px 4px rgba(255,255,255,.28),inset -2px -2px 4px rgba(72,0,15,.22)}
+.roll-icon i{position:absolute;width:4px;height:4px;border-radius:50%;background:#fff;box-shadow:0 1px 2px rgba(70,0,15,.4)}
+.roll-icon i:nth-child(1){left:6px;top:6px}.roll-icon i:nth-child(2){right:6px;top:6px}.roll-icon i:nth-child(3){left:50%;top:50%;transform:translate(-50%,-50%)}.roll-icon i:nth-child(4){left:6px;bottom:6px}.roll-icon i:nth-child(5){right:6px;bottom:6px}
+@media(max-width:760px){
+ .column-scores{gap:6px}.column-scores>div{min-height:32px;border-radius:8px}.column-scores small,.diagonal-scores small{font-size:.48rem}.column-scores b,.diagonal-scores b{font-size:.88rem}
+ .diagonal-scores>div{min-height:33px}.rules-card{margin-top:9px}.rules-card summary{padding:9px 11px}.rules-content{font-size:.73rem;padding:0 11px 11px}
+ .dice-btn{font-size:.93rem;gap:8px}.roll-icon{width:24px;height:24px;flex-basis:24px}
+}
