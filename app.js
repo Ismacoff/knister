@@ -79,7 +79,7 @@ function renderBoard(){
 }
 function renderFromRoom(){
  if(room.phase==='lobby'){renderLobby();return}
- $('gameName').textContent=myName;$('turnLabel').textContent='Wurf '+room.turn+' / 25';$('currentRoll').textContent=room.currentRoll==null?'–':room.currentRoll;setDie($('die1'),room.dice?.[0]||1);setDie($('die2'),room.dice?.[1]||1);
+ $('gameName').textContent=myName;$('turnLabel').textContent='Wurf '+room.turn+' / 25';$('currentRoll').textContent=room.currentRoll==null?'–':room.currentRoll;if(!isRolling)showSettledDice();
  const ps=playerSummary(),ready=ps.filter(p=>p.placed).length,all=ps.length>0&&ready===ps.length;
  $('readyCount').textContent=room.currentRoll==null?'':ready+' / '+ps.length+' platziert';
  $('standings').innerHTML=ps.map((p,i)=>`<div class="standing"><span>${i+1}</span><div><b>${escapeHtml(p.name)}${p.id===myPeerId?' · du':''}</b><div class="${p.placed?'check':'wait'}">${room.currentRoll==null?'bereit':p.placed?'✓ platziert':'wartet …'}</div></div><span class="score">${p.score||0}</span></div>`).join('');
@@ -107,35 +107,52 @@ function setDie(el,value){
  el.setAttribute('data-value',String(value));
  el.setAttribute('aria-label','Würfel zeigt '+value);
 }
+function settledTransforms(){
+ const board=$('board'),w=board?.clientWidth||320,h=board?.clientHeight||320;
+ return [
+  `translate(${w*.36}px,${h*.42}px) rotate(-18deg) scale(1)`,
+  `translate(${w*.57}px,${h*.48}px) rotate(14deg) scale(1)`
+ ];
+}
+function showSettledDice(){
+ const overlay=$('diceOverlay'),fly1=$('flyDie1'),fly2=$('flyDie2');
+ if(!overlay||!fly1||!fly2)return;
+ if(room.currentRoll==null){overlay.classList.remove('active');return}
+ setDie(fly1,room.dice?.[0]||1);setDie(fly2,room.dice?.[1]||1);
+ fly1.getAnimations().forEach(x=>x.cancel());fly2.getAnimations().forEach(x=>x.cancel());
+ const [t1,t2]=settledTransforms();fly1.style.transform=t1;fly2.style.transform=t2;
+ overlay.classList.add('active');
+}
 function animateDice(a,b,commit=true){
- const die1=$('die1'),die2=$('die2'),fly1=$('flyDie1'),fly2=$('flyDie2'),board=$('board'),overlay=$('diceOverlay');
- if(!die1||!die2||!fly1||!fly2||!board||!overlay){isRolling=false;return}
- diceSound();
- setDie(die1,a);setDie(die2,b);setDie(fly1,a);setDie(fly2,b);
- overlay.classList.remove('active');fly1.getAnimations().forEach(x=>x.cancel());fly2.getAnimations().forEach(x=>x.cancel());
- void overlay.offsetWidth;overlay.classList.add('active');
+ const fly1=$('flyDie1'),fly2=$('flyDie2'),board=$('board'),overlay=$('diceOverlay');
+ if(!fly1||!fly2||!board||!overlay){isRolling=false;return}
+ diceSound();setDie(fly1,a);setDie(fly2,b);
+ fly1.getAnimations().forEach(x=>x.cancel());fly2.getAnimations().forEach(x=>x.cancel());
+ fly1.style.transform='';fly2.style.transform='';overlay.classList.remove('active');void overlay.offsetWidth;overlay.classList.add('active');
  const w=board.clientWidth,h=board.clientHeight,size=Math.min(68,Math.max(54,w*.16));
+ const [end1,end2]=settledTransforms();
  const path1=[
   {transform:`translate(${-size*1.3}px,${-size*.65}px) rotate(-80deg) scale(.65)`,offset:0},
   {transform:`translate(${w*.18}px,${h*.10}px) rotate(155deg) scale(1.08)`,offset:.25},
   {transform:`translate(${w*.60}px,${h*.38}px) rotate(385deg) scale(.90)`,offset:.52},
   {transform:`translate(${w*.34}px,${h*.19}px) rotate(505deg) scale(1.03)`,offset:.72},
-  {transform:`translate(${w*.39}px,${h*.43}px) rotate(620deg) scale(1)`,offset:1}
+  {transform:end1,offset:1}
  ];
  const path2=[
   {transform:`translate(${w+size*.25}px,${-size*.8}px) rotate(95deg) scale(.62)`,offset:0},
   {transform:`translate(${w*.68}px,${h*.12}px) rotate(-145deg) scale(1.07)`,offset:.24},
   {transform:`translate(${w*.22}px,${h*.45}px) rotate(-390deg) scale(.91)`,offset:.53},
   {transform:`translate(${w*.55}px,${h*.24}px) rotate(-510deg) scale(1.04)`,offset:.73},
-  {transform:`translate(${w*.56}px,${h*.48}px) rotate(-635deg) scale(1)`,offset:1}
+  {transform:end2,offset:1}
  ];
  const opts={duration:1650,easing:'cubic-bezier(.16,.72,.18,1)',fill:'forwards'};
  fly1.animate(path1,opts);fly2.animate(path2,opts);
- let ticks=0;const timer=setInterval(()=>{if(++ticks<10){setDie(die1,1+Math.floor(Math.random()*6));setDie(die2,1+Math.floor(Math.random()*6))}},110);
- setTimeout(()=>{clearInterval(timer);setDie(die1,a);setDie(die2,b)},1320);
+ let ticks=0;const timer=setInterval(()=>{if(++ticks<10){setDie(fly1,1+Math.floor(Math.random()*6));setDie(fly2,1+Math.floor(Math.random()*6))}},110);
+ setTimeout(()=>{clearInterval(timer);setDie(fly1,a);setDie(fly2,b)},1320);
  setTimeout(()=>{
-  overlay.classList.remove('active');
-  if(commit){room.dice=[a,b];room.turn++;room.currentRoll=a+b;Object.values(room.players).forEach(p=>p.placed=false);myPlaced=false;isRolling=false;broadcast()}
+  room.dice=[a,b];room.turn++;room.currentRoll=a+b;Object.values(room.players).forEach(p=>p.placed=false);myPlaced=false;isRolling=false;
+  showSettledDice();
+  if(commit)broadcast();
  },1700);
 }
 function rollDice(){
@@ -164,6 +181,6 @@ $('hostBtn').addEventListener('click',createHost);$('joinBtn').addEventListener(
 $('leaveBtn').addEventListener('click',()=>{destroyPeer();show('home')});$('exitGameBtn').addEventListener('click',()=>{destroyPeer();show('home')});$('newGameBtn').addEventListener('click',newRound);
 $('codeInput').addEventListener('input',e=>e.target.value=e.target.value.toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,5));
 $('board').addEventListener('click',e=>{const b=e.target.closest('[data-cell]');if(b)place(Number(b.dataset.cell))});
-$('diceBtn').addEventListener('click',()=>{audioReady();rollDice()});$('hostBtn').addEventListener('pointerdown',audioReady,{once:true});$('joinBtn').addEventListener('pointerdown',audioReady,{once:true});setDie($('die1'),1);setDie($('die2'),1);
+$('diceBtn').addEventListener('click',()=>{audioReady();rollDice()});$('hostBtn').addEventListener('pointerdown',audioReady,{once:true});$('joinBtn').addEventListener('pointerdown',audioReady,{once:true});
 const saved=localStorage.getItem('knister-name');if(saved)$('nameInput').value=saved;
 window.addEventListener('beforeunload',()=>{try{if(peer)peer.destroy()}catch(e){}});
