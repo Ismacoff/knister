@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#f7f5ef">
 <meta name="description" content="Knister Online – gemeinsam über das Internet spielen.">
 <title>Knister Online</title>
-<link rel="stylesheet" href="styles.css?v=20260920-compact3">
+<link rel="stylesheet" href="styles.css?v=20260920-scores4">
 <script src="https://cdn.jsdelivr.net/npm/peerjs@1.5.5/dist/peerjs.min.js"></script>
 </head>
 <body>
@@ -67,7 +67,7 @@
     <div id="turnHint" class="mini">Der Spielleiter würfelt zuerst.</div>
   </div>
   <div id="hostControls" class="hostroll hide">
-    <button id="diceBtn" class="btn dice-btn">🎲 Würfeln</button>
+    <button id="diceBtn" class="btn dice-btn"><span class="roll-icon" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span><span>Würfel rollen</span></button>
     <div class="mini" id="hostHint">Erst wenn alle platziert haben, geht es weiter.</div>
   </div>
 </div>
@@ -82,6 +82,14 @@
   <div id="rowScores" class="row-scores" aria-label="Punkte der einzelnen Reihen">
     <div>0</div><div>0</div><div>0</div><div>0</div><div>0</div>
   </div>
+  <div id="columnScores" class="column-scores" aria-label="Punkte der einzelnen Spalten">
+    <div>0</div><div>0</div><div>0</div><div>0</div><div>0</div>
+  </div>
+  <div class="score-spacer" aria-hidden="true"></div>
+  <div id="diagonalScores" class="diagonal-scores" aria-label="Punkte der Diagonalen">
+    <div><small>↘ ×2</small><b>0</b></div>
+    <div><small>↙ ×2</small><b>0</b></div>
+  </div>
 </div>
 <div class="scoreline">
 <div class="scorebox"><small>Zeilen</small><b id="sRows">0</b></div>
@@ -89,6 +97,19 @@
 <div class="scorebox"><small>Diagonalen ×2</small><b id="sDiag">0</b></div>
 <div class="scorebox"><small>Gesamt</small><b id="sTotal">0</b></div>
 </div>
+<details class="rules-card">
+  <summary><span class="rules-icon">?</span><span><b>Spielregeln &amp; Wertung</b><small>Antippen zum Öffnen</small></span><span class="rules-chevron">⌄</span></summary>
+  <div class="rules-content">
+    <p>Jede gewürfelte Summe wird einmal in ein freies Feld eingetragen. Nach 25 Würfen ist der Block voll.</p>
+    <div class="rules-grid">
+      <span>Ein Paar <b>1</b></span><span>Zwei Paare <b>3</b></span>
+      <span>Dreierpasch <b>3</b></span><span>Viererpasch <b>6</b></span>
+      <span>Full House <b>8</b></span><span>Fünferpasch <b>10</b></span>
+      <span>Straße mit 7 <b>8</b></span><span>Straße ohne 7 <b>12</b></span>
+    </div>
+    <p class="rules-note">Die beiden Diagonalen zählen doppelt.</p>
+  </div>
+</details>
 </div>
 <div class="card status-card">
 <div id="winnerBox" class="winner hide"></div>
@@ -102,6 +123,6 @@
 <div class="foot">Knister Online · inoffizieller digitaler Spielblock · Verbindung via WebRTC</div>
 </div>
 
-<script src="app.js?v=20260920-compact3"></script>
+<script src="app.js?v=20260920-scores4"></script>
 </body>
 </html>
