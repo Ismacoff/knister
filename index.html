@@ -1,197 +1,96 @@
 <!doctype html>
 <html lang="de">
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#f3f7f6"><meta name="description" content="Dein digitaler Knister-Spielblock. Dein eigener Spielblock pro Handy. Zahlen eintragen und automatisch werten.">
-<title>Knister · Spielblock</title>
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23e0f2e9'/%3E%3Cpath d='M18 14v36m27-36L20 34l27 16' fill='none' stroke='%23245f54' stroke-width='8'/%3E%3C/svg%3E">
-<style>
-:root{color-scheme:light;--bg:#f3f7f6;--panel:#ffffff;--line:#d4e0de;--text:#253f48;--muted:#586f75;--coral:#bf492f;--cyan:#177d89;--radius:24px;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;font-synthesis:none}
-*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 0% 0%,#fff0d8 0,transparent 50%),radial-gradient(ellipse at 100% 10%,#dff2ef 0,transparent 55%),var(--bg);color:var(--text);min-height:100vh}button,input{font:inherit}button{color:inherit;cursor:pointer;touch-action:manipulation}button:disabled{cursor:default;opacity:.38}button,input{ -webkit-tap-highlight-color:transparent}button:focus-visible,input:focus-visible,a:focus-visible{outline:3px solid var(--cyan);outline-offset:4px}button{border:1px solid var(--line);background:#fff;border-radius:12px;min-height:44px;padding:10px 16px;font-size:.9rem;font-weight:600}button:hover:not(:disabled){filter:brightness(.97)}button:active:not(:disabled){transform:translateY(1px)}a{color:var(--cyan)}.wrap{max-width:1110px;margin:auto;padding:32px 32px 24px}.top{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:30px}.brand{font-size:2rem;font-weight:900;letter-spacing:-1.8px;line-height:1}.brand span{color:var(--coral)}.brand small{display:block;font-size:.7rem;letter-spacing:3.2px;font-weight:600;color:var(--muted);margin-top:10px}.top-actions{display:flex;gap:8px}.quiet{background:transparent}.accent{background:var(--coral);border-color:var(--coral);color:#fff}.eyebrow{font-size:.75rem;letter-spacing:2px;text-transform:uppercase;color:var(--muted);font-weight:650}.players-bar{display:flex;gap:12px;align-items:center;margin-bottom:22px;min-width:0}.tabs{display:flex;gap:10px;overflow-x:auto;padding:4px;flex:1;scrollbar-width:thin}.player-tab{flex-shrink:0;display:flex;align-items:center;gap:10px;border-radius:14px;background:transparent;color:var(--muted);padding:10px 14px}.player-tab[aria-selected=true]{background:#fff1dc;border-color:#e6b678;color:#4d493b}.avatar{display:inline-grid;place-items:center;width:30px;height:30px;flex-shrink:0;border-radius:10px;background:#f8d8a5;color:#65492b;font-size:.85rem;font-weight:750}.tab-name{max-width:135px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.tab-score{color:var(--coral);font-variant-numeric:tabular-nums}.layout{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(280px,1fr);gap:24px;align-items:start}.panel{background:#fffefb;border:1px solid var(--line);border-radius:var(--radius);box-shadow:0 12px 35px #284c4c0b,0 2px 5px #284c4c05}.play{padding:24px}.board-head{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:18px}h1{font-size:1.5rem;letter-spacing:-.7px;margin:5px 0;overflow-wrap:anywhere}h2{font-size:1.15rem;letter-spacing:-.3px;margin:0}.progress-text{font-size:.85rem;color:var(--muted);white-space:nowrap}.progress{height:3px;background:#dfe9e5;border-radius:4px;margin-top:10px;overflow:hidden}.progress>span{display:block;height:100%;background:var(--coral);transition:width .2s}.grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr)) 42px;gap:7px}.cell{position:relative;padding:0;aspect-ratio:1;min-height:0;border-radius:13px;background:linear-gradient(155deg,#fffefb,#faf9f3);border:1px solid #d7ddd5;box-shadow:0 2px 0 #d7dfd6;font-size:clamp(1.3rem,3vw,1.9rem);font-weight:730;font-variant-numeric:tabular-nums}.cell.empty{color:#7d9696;font-size:1.2rem}.cell.diag{background:linear-gradient(155deg,#e6f7f3,#d7efea);border-color:#afd4cd;color:#175865}.cell.diag:after{content:"";position:absolute;width:4px;height:4px;background:#6babaa;border-radius:50%;right:8px;top:8px}.cell.selected{background:#ffe0a2;color:#594122;border-color:#cfa456;box-shadow:0 0 0 3px #edc57c40,0 2px 0 #d3b780}.cell.highlight{outline:2px solid var(--cyan);outline-offset:-3px}.line-score{padding:0;min-height:36px;border:none;background:transparent;color:var(--muted);font-variant-numeric:tabular-nums;font-weight:700}.line-score.scored{color:#175865}.score-corner{display:grid;place-items:center;color:#7d9696;font-size:.7rem}.diagonals{display:flex;gap:10px;margin:16px 0 4px}.diagonal{flex:1;background:#e9f6f2;color:var(--cyan);border-color:#c5e1db;text-align:left;font-size:.85rem;padding:11px 13px;display:flex;align-items:center;justify-content:space-between;gap:5px}.diagonal strong{font-size:1.15rem}.input-section{margin-top:22px;padding-top:18px;border-top:1px solid var(--line)}.input-head{display:flex;justify-content:space-between;align-items:center;gap:6px;margin-bottom:13px;font-size:.9rem}.input-head span{color:var(--muted)}.keys{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:7px}.key{padding:10px 0;font-size:1.25rem;min-height:48px;background:#ffffff;border-color:#ccd9d6;border-radius:11px}.erase{font-size:.82rem;color:var(--muted)}.board-actions{display:flex;justify-content:space-between;gap:10px;margin-top:14px}.board-actions button{font-size:.85rem;padding:8px 12px;background:transparent}.hint{color:var(--muted);font-size:.8rem;line-height:1.5;margin:12px 0 0}.sidebar{display:grid;gap:18px}.total-panel{position:relative;overflow:hidden;padding:24px;background:linear-gradient(135deg,#e0f2e9,#f4faf2)}.total-panel:after{content:"";position:absolute;width:110px;height:110px;border:1px solid #689c8629;border-radius:50%;right:-36px;top:24px;pointer-events:none}.total-label{color:#35634f;font-size:.8rem;font-weight:600;letter-spacing:1.5px;text-transform:uppercase}.total{font-size:5.4rem;line-height:1.1;letter-spacing:-5px;font-weight:800;font-variant-numeric:tabular-nums;margin:8px 0}.total small{font-size:1rem;color:var(--muted);letter-spacing:0;font-weight:500}.status{color:var(--muted);font-size:.85rem;margin:0 0 20px;line-height:1.5}.totals{display:grid;grid-template-columns:repeat(3,1fr);padding-top:18px;border-top:1px solid #b7d7c7;gap:5px}.totals span{display:block;font-size:.75rem;color:var(--muted);margin-bottom:6px}.totals strong{font-size:1.25rem}.totals>div:last-child strong{color:var(--cyan)}.standings{padding:22px}.section-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:15px}.section-head small{color:var(--muted);font-size:.8rem}.rank{width:100%;display:flex;align-items:center;gap:12px;text-align:left;background:transparent;border:0;border-radius:10px;padding:11px 0;min-height:60px}.rank+.rank{border-top:1px solid #e2e9e6}.rank>span:first-child{width:18px;font-size:.85rem;color:var(--muted)}.rank-info{flex:1;min-width:0}.rank-info b{display:block;font-size:.95rem;font-weight:600;overflow-wrap:anywhere}.rank-info small{font-size:.75rem;font-weight:400;color:var(--muted)}.rank-points{font-size:1.35rem;white-space:nowrap}.rules-teaser{border:1px solid #ebd7b0;border-radius:18px;padding:18px 20px;background:#fff5df;color:#655437}.rules-teaser strong{font-size:.95rem}.rules-teaser p{font-size:.85rem;line-height:1.6;margin:8px 0 0;color:#6b6656}.bottom{display:flex;justify-content:space-between;gap:12px;color:var(--muted);font-size:.75rem;padding:22px 4px;line-height:1.5}.saved.warning{color:#a54425}.banner{display:none;margin-bottom:18px;padding:18px;background:#e3f3e8;border:1px solid #95c7ad;border-radius:16px;line-height:1.5}.banner.show{display:block}.banner strong{color:#28654b;display:block;margin-bottom:3px}.toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,20px);background:#294b4f;color:#fff;border-radius:14px;padding:13px 20px;max-width:90vw;width:max-content;box-shadow:0 8px 25px #294b4f26;font-size:.9rem;z-index:10;opacity:0;pointer-events:none;transition:.2s}.toast.show{opacity:1;transform:translate(-50%,0)}dialog{color:var(--text);background:#fffefb;border:1px solid #cddbd7;border-radius:24px;padding:26px;max-width:480px;width:calc(100% - 28px);max-height:88vh;box-shadow:0 25px 100px #294b4f35}dialog::backdrop{background:#294b4f66;backdrop-filter:blur(6px)}.dialog-top{display:flex;align-items:center;justify-content:space-between;gap:15px;margin-bottom:18px}.close{padding:6px 12px;font-size:1.3rem;background:transparent}dialog p{color:var(--muted);font-size:.95rem;line-height:1.65}.rules-table{width:100%;border-collapse:collapse;font-size:.9rem}.rules-table td{padding:11px 0;border-bottom:1px solid var(--line)}.rules-table td:last-child{text-align:right;color:var(--coral);font-weight:700}.cyan{color:var(--cyan)}.dialog-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:20px;flex-wrap:wrap}.player-edit{display:flex;gap:9px;margin:12px 0;align-items:center}.player-edit input{width:100%;min-width:0;border:1px solid #bdcdc7;color:var(--text);background:#fff;border-radius:10px;padding:12px;font-size:1rem}.player-edit button{padding:8px 12px}.player-edit label{min-width:0;flex:1}.player-edit label span{font-size:.75rem;color:var(--muted);display:block;margin-bottom:5px}.wide{width:100%;margin-top:10px}.history-row{padding:14px 0;border-bottom:1px solid var(--line)}.history-row h3{font-size:1rem;margin:0 0 10px}.history-row p{display:flex;justify-content:space-between;gap:10px;margin:5px 0;font-size:.9rem}.line-values{display:flex;gap:6px;margin:22px 0}.line-values span{flex:1;text-align:center;padding:12px 0;border-radius:10px;background:#e5f1ec;font-size:1.4rem;font-weight:700}.line-result{font-size:2rem;color:var(--coral);font-weight:750}.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
-@media(min-width:900px){.play{padding:28px}.grid{gap:9px}.key{min-height:52px}}
-@media(max-width:730px){.wrap{padding:20px 14px 8px;max-width:510px}.top{margin-bottom:19px}.brand{font-size:1.75rem}.brand small{font-size:.62rem;letter-spacing:2.8px}.top-actions button{padding:8px 12px}.players-bar{margin-bottom:14px;gap:6px}.player-tab{padding:8px 10px;gap:7px}.layout{display:flex;flex-direction:column;gap:16px}.play,.sidebar{width:100%}.play{padding:17px;border-radius:20px}.sidebar{gap:14px}.board-head{margin-bottom:14px}h1{font-size:1.3rem}.grid{gap:6px;grid-template-columns:repeat(5,minmax(0,1fr)) 31px}.cell{border-radius:10px;font-size:1.6rem}.input-section{margin-top:16px;padding-top:14px}.total-panel{padding:20px}.total{font-size:4rem;letter-spacing:-3px}.total-panel .status{margin-bottom:12px}.diagonals{gap:7px;margin-top:12px}.diagonal{padding:10px;font-size:.8rem}.bottom{flex-direction:column;gap:4px}.mobile-score{display:block!important;text-align:right}.mobile-score strong{display:block;font-size:1.6rem;color:var(--coral);line-height:1.1}.mobile-score small{font-size:.75rem;color:var(--muted)}.progress-text{display:none}.keys{gap:6px}.key{min-height:46px}.standings{padding:20px}.top-actions .new-label{display:none}}
-.mobile-score{display:none}@media(prefers-reduced-motion:reduce){*,*:before,*:after{transition:none!important;scroll-behavior:auto!important}}@media(max-width:360px){.wrap{padding-left:8px;padding-right:8px}.play{padding:12px}.player-tab .avatar{display:none}.diagonal{font-size:.75rem}.top-actions{gap:4px}.top-actions button{padding:8px}.brand{font-size:1.5rem}}
-
-/* Embedded handwriting: works offline without requesting a font service. */
-@font-face{font-family:KnisterHand;src:url(data:font/ttf;base64,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IyAgPIo4LbA+LCMgLkawAiVGUlggPFkusS4BFCstsD8sIyAuRrACJUZQWCA8WS6xLgEUKy2wQCwjIC5GsAIlRlJYIDxZIyAuRrACJUZQWCA8WS6xLgEUKy2wQSywOCsjIC5GsAIlRlJYIDxZLrEuARQrLbBCLLA5K4ogIDywBCNCijgjIC5GsAIlRlJYIDxZLrEuARQrsARDLrAuKy2wQyywABawBCWwBCYgLkcjRyNhsAlDKyMgPCAuIzixLgEUKy2wRCyxCAQlQrAAFrAEJbAEJSAuRyNHI2EgsAQjQrAJQysgsGBQWCCwQFFYswIgAyAbswImAxpZQkIjIEewBEOwAmIgsABQWLBAYFlmsAFjYCCwASsgiophILACQ2BkI7ADQ2FkUFiwAkNhG7ADQ2BZsAMlsAJiILAAUFiwQGBZZrABY2GwAiVGYTgjIDwjOBshICBGI0ewASsjYTghWbEuARQrLbBFLLA4Ky6xLgEUKy2wRiywOSshIyAgPLAEI0IjOLEuARQrsARDLrAuKy2wRyywABUgR7AAI0KyAAEBFRQTLrA0Ki2wSCywABUgR7AAI0KyAAEBFRQTLrA0Ki2wSSyxAAEUE7A1Ki2wSiywNyotsEsssAAWRSMgLiBGiiNhOLEuARQrLbBMLLAII0KwSystsE0ssgAARCstsE4ssgABRCstsE8ssgEARCstsFAssgEBRCstsFEssgAARSstsFIssgABRSstsFMssgEARSstsFQssgEBRSstsFUssgAAQSstsFYssgABQSstsFcssgEAQSstsFgssgEBQSstsFkssgAAQystsFossgABQystsFsssgEAQystsFwssgEBQystsF0ssgAARistsF4ssgABRistsF8ssgEARistsGAssgEBRistsGEssgAAQistsGIssgABQistsGMssgEAQistsGQssgEBQistsGUssDorLrEuARQrLbBmLLA6K7A+Ky2wZyywOiuwPystsGgssAAWsDorsEArLbBpLLA7Ky6xLgEUKy2waiywOyuwPistsGsssDsrsD8rLbBsLLA7K7BAKy2wbSywPCsusS4BFCstsG4ssDwrsD4rLbBvLLA8K7A/Ky2wcCywPCuwQCstsHEssD0rLrEuARQrLbByLLA9K7A+Ky2wcyywPSuwPystsHQssD0rsEArLbB1LLMJBAID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) format('truetype');font-style:normal;font-weight:400;font-display:swap}
-:root{--hand:KnisterHand,"Segoe Print","Bradley Hand",cursive}
-.brand{color:#284c50}.brand span{color:#d16548}
-.panel.play{border-color:#dce3d9;box-shadow:0 12px 32px #35534c0a,0 4px 0 -1px #fffefb,0 5px 0 -1px #dce3d9,0 8px 0 -2px #fffefb,0 9px 0 -2px #dce3d9}
-.player-tab{border-color:#d6e1db;background:#ffffff88}.player-tab[aria-selected=true]{box-shadow:0 3px 10px #bc956015}
-.avatar{border-radius:50%}.player-tab:nth-child(3n+2) .avatar{background:#c9e8e3;color:#285c61}.player-tab:nth-child(3n+3) .avatar{background:#e5dbf2;color:#695487}
-.cell,.key:not(.erase),.line-score,.diagonal strong,.total>span,.totals strong,.rank-points,.tab-score,.mobile-score strong,.line-values span,.line-result{font-family:var(--hand);font-weight:400;font-variant-numeric:normal}
-.cell{font-size:clamp(1.8rem,3.5vw,2.65rem);line-height:1.25;transition:background .15s,box-shadow .15s;color:#24505e}.cell.empty{font-family:inherit;color:#a4b3ad;font-size:1.2rem}.cell.selected{color:#69491f}.cell.diag:after{width:3px;height:3px}
-.line-score{font-size:1.3rem}.diagonal strong{font-size:1.5rem;line-height:1.2}.key:not(.erase){font-size:1.65rem;line-height:1.1}.key{box-shadow:0 2px 0 #dce5df}.key:disabled{opacity:.65;background:#f6f8f5;box-shadow:none}.erase:disabled{opacity:.4}
-.total{color:#235849;letter-spacing:0;line-height:1.05}.total>span{font-size:5.7rem}.total small{color:#476c5d}.totals strong{font-size:1.65rem;line-height:1}.rank-points{font-size:1.8rem;color:#315f60;line-height:1.1}.tab-score{font-size:1.25rem;line-height:1}.mobile-score strong{font-size:2rem;color:#286957;line-height:1.1}
-.input-section{border-top-style:dashed}.board-actions button{color:#526e73}.status{color:#486959}.total-panel{border-color:#c3dfce}.total-panel:after{width:150px;height:150px;right:-64px;top:0}.rules-teaser{box-shadow:0 3px 12px #8b704806}.banner strong{color:#28654b}
-button:focus-visible,input:focus-visible{outline-color:#187784}.line-result{color:#316b62}.line-values span{color:#24505e}.rules-table td:last-child{font-family:var(--hand);font-size:1.4rem;color:#35685e}.quiet:hover:not(:disabled){background:#fff9}
-@media(max-width:730px){.cell{font-size:2rem}.total>span{font-size:4.6rem}.total{letter-spacing:0}.line-score{font-size:1.2rem}.key:not(.erase){font-size:1.6rem}.diagonal strong{font-size:1.4rem}.panel.play{padding-bottom:18px}.mobile-score strong{color:#286957;font-size:2rem}}
-@media(max-width:360px){.cell{font-size:1.75rem}.key:not(.erase){font-size:1.45rem}}
-
-/* Keep diagonal labels and handwritten scores in separate, shrink-safe columns. */
-.diagonals{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}
-.diagonal{min-width:0;display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:8px}
-.diagonal-label{min-width:0;display:flex;flex-direction:column;gap:3px;line-height:1.4}
-.diagonal-label>span{font-size:.85rem;overflow-wrap:anywhere}
-.diagonal-label small{font-size:.7rem;font-weight:400;color:#426f71}
-.diagonal strong{display:block;min-width:2ch;text-align:right;line-height:1.5;white-space:nowrap}
-.totals{grid-template-columns:repeat(2,minmax(0,1fr));row-gap:16px}
-.totals>div{min-width:0}.totals strong{display:block;line-height:1.5}
-.totals .diagonal-total{grid-column:1/-1;display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;column-gap:12px;padding-top:12px;border-top:1px solid #b7d7c7}
-.diagonal-total>span{margin:0}.diagonal-total>strong{grid-column:2;grid-row:1/3;min-width:2ch;text-align:right}
-.diagonal-total>small{font-size:.75rem;color:#426f71;line-height:1.5}
-
-/* The score corner is intentionally empty: only real row and column scores remain. */
-.input-head{flex-wrap:wrap;row-gap:4px}.input-head>span{overflow-wrap:anywhere}
-</style>
-<!-- Embedded font: Kalam by Indian Type Foundry; digit subset.
-Copyright (c) 2014, Indian Type Foundry (info@indiantypefoundry.com).
-
-This Font Software is licensed under the SIL Open Font License, Version 1.1.
-This license is copied below, and is also available with a FAQ at:
-http://scripts.sil.org/OFL
-
-
-—————————————————————————————-
-SIL OPEN FONT LICENSE Version 1.1 - 26 February 2007
-—————————————————————————————-
-
-PREAMBLE
-The goals of the Open Font License (OFL) are to stimulate worldwide
-development of collaborative font projects, to support the font creation
-efforts of academic and linguistic communities, and to provide a free and
-open framework in which fonts may be shared and improved in partnership
-with others.
-
-The OFL allows the licensed fonts to be used, studied, modified and
-redistributed freely as long as they are not sold by themselves. The
-fonts, including any derivative works, can be bundled, embedded, 
-redistributed and/or sold with any software provided that any reserved
-names are not used by derivative works. The fonts and derivatives,
-however, cannot be released under any other type of license. The
-requirement for fonts to remain under this license does not apply
-to any document created using the fonts or their derivatives.
-
-DEFINITIONS
-"Font Software" refers to the set of files released by the Copyright
-Holder(s) under this license and clearly marked as such. This may
-include source files, build scripts and documentation.
-
-"Reserved Font Name" refers to any names specified as such after the
-copyright statement(s).
-
-"Original Version" refers to the collection of Font Software components as
-distributed by the Copyright Holder(s).
-
-"Modified Version" refers to any derivative made by adding to, deleting,
-or substituting — in part or in whole — any of the components of the
-Original Version, by changing formats or by porting the Font Software to a
-new environment.
-
-"Author" refers to any designer, engineer, programmer, technical
-writer or other person who contributed to the Font Software.
-
-PERMISSION & CONDITIONS
-Permission is hereby granted, free of charge, to any person obtaining
-a copy of the Font Software, to use, study, copy, merge, embed, modify,
-redistribute, and sell modified and unmodified copies of the Font
-Software, subject to the following conditions:
-
-1) Neither the Font Software nor any of its individual components,
-in Original or Modified Versions, may be sold by itself.
-
-2) Original or Modified Versions of the Font Software may be bundled,
-redistributed and/or sold with any software, provided that each copy
-contains the above copyright notice and this license. These can be
-included either as stand-alone text files, human-readable headers or
-in the appropriate machine-readable metadata fields within text or
-binary files as long as those fields can be easily viewed by the user.
-
-3) No Modified Version of the Font Software may use the Reserved Font
-Name(s) unless explicit written permission is granted by the corresponding
-Copyright Holder. This restriction only applies to the primary font name as
-presented to the users.
-
-4) The name(s) of the Copyright Holder(s) or the Author(s) of the Font
-Software shall not be used to promote, endorse or advertise any
-Modified Version, except to acknowledge the contribution(s) of the
-Copyright Holder(s) and the Author(s) or with their explicit written
-permission.
-
-5) The Font Software, modified or unmodified, in part or in whole,
-must be distributed entirely under this license, and must not be
-distributed under any other license. The requirement for fonts to
-remain under this license does not apply to any document created
-using the Font Software.
-
-TERMINATION
-This license becomes null and void if any of the above conditions are
-not met.
-
-DISCLAIMER
-THE FONT SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO ANY WARRANTIES OF
-MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT
-OF COPYRIGHT, PATENT, TRADEMARK, OR OTHER RIGHT. IN NO EVENT SHALL THE
-COPYRIGHT HOLDER BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
-INCLUDING ANY GENERAL, SPECIAL, INDIRECT, INCIDENTAL, OR CONSEQUENTIAL
-DAMAGES, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
-FROM, OUT OF THE USE OR INABILITY TO USE THE FONT SOFTWARE OR FROM
-OTHER DEALINGS IN THE FONT SOFTWARE.
-
--->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#f7f5ef">
+<meta name="description" content="Knister Online – gemeinsam über das Internet spielen.">
+<title>Knister Online</title>
+<link rel="stylesheet" href="styles.css">
+<script src="https://cdn.jsdelivr.net/npm/peerjs@1.5.5/dist/peerjs.min.js"></script>
 </head>
 <body>
-<div class="wrap">
-<header class="top"><div class="brand" aria-label="Knister">knister<span>.</span><small>DEIN SPIELBLOCK</small></div><div class="top-actions"><button class="quiet" id="rulesBtn">Spielregeln</button><button class="accent" id="newBtn">+ <span class="new-label">Neues </span>Spiel</button></div></header>
-<div id="banner" class="banner" role="status"></div>
-<main class="layout">
-<section class="panel play" aria-label="Knister Spielblock"><div class="board-head"><div><div class="eyebrow" id="round">Spiel 01</div><h1 id="playerTitle">Dein Spielblock</h1></div><div><div class="progress-text" id="progressText">0 / 25 Felder</div><div class="mobile-score"><strong id="mobileTotal">0</strong><small>Punkte</small></div><div class="progress"><span id="progressBar"></span></div></div></div>
-<div class="grid" id="grid" role="group" aria-label="5 mal 5 Spielfeld"></div>
-<div class="diagonals"><button class="diagonal" data-line="10"><span class="diagonal-label"><span>↘ Diagonale</span><small>doppelt gewertet</small></span><strong id="diagA">–</strong></button><button class="diagonal" data-line="11"><span class="diagonal-label"><span>↗ Diagonale</span><small>doppelt gewertet</small></span><strong id="diagB">–</strong></button></div>
-<div class="input-section"><div class="input-head"><strong id="inputTitle">Feld antippen</strong><span id="inputHint">Dann die Würfelsumme.</span></div><div class="keys" id="keys" role="group" aria-label="Würfelsumme eingeben"></div><div class="board-actions"><button id="undoBtn" disabled>↶ Rückgängig</button><button id="historyBtn">Bisherige Spiele</button></div><p class="hint" id="hint">Ihr würfelt gemeinsam. Trage die Summe beider Würfel auf deinem Handy ein. Zum Korrigieren ein belegtes Feld antippen.</p></div>
-</section>
-<aside class="sidebar"><section class="panel total-panel" aria-label="Punkteübersicht"><div class="total-label">Deine Punkte</div><div class="total"><span id="total">0</span> <small>gesamt</small></div><p class="status" id="scoreStatus">Gewertet werden vollständig gefüllte Linien.</p><div class="totals"><div><span>Zeilen</span><strong id="rowTotal">0</strong></div><div><span>Spalten</span><strong id="colTotal">0</strong></div><div class="diagonal-total"><span>Diagonalen</span><strong id="diagTotal">0</strong><small>Verdopplung enthalten</small></div></div></section><div class="rules-teaser"><strong>Die Diagonalen machen den Unterschied.</strong><p>Die mintfarbenen Felder gehören zu den beiden Diagonalen. Jede Diagonale bringt doppelte Punkte – bis zu 24!</p></div></aside>
-</main><footer class="bottom"><span class="saved" id="saveStatus">Auf diesem Gerät gespeichert</span><span>Ein Spielblock pro Handy · Version 1.2</span></footer>
+<div class="app">
+<header class="top"><div class="brand">knister <i>online</i></div><div class="pill"><span id="netDot" class="dot"></span><span id="netText">Bereit</span></div></header>
+
+<section id="home" class="screen active">
+<div class="home">
+<div class="card hero">
+<div class="label">Gemeinsam · jedes Handy · ein Raum</div>
+<h1>Würfeln.<br><span>Platzieren.</span><br>Gewinnen.</h1>
+<p>Ein Spieler eröffnet den Raum. Alle anderen treten mit dem fünfstelligen Code bei. Die aktuelle Würfelsumme erscheint gleichzeitig auf allen Handys.</p>
+<div class="steps"><div class="step"><b>1</b>Raum erstellen</div><div class="step"><b>2</b>Code teilen</div><div class="step"><b>3</b>Gemeinsam spielen</div></div>
 </div>
-<dialog id="rulesDialog" aria-labelledby="rulesTitle"><div class="dialog-top"><h2 id="rulesTitle">So wird gewertet</h2><button class="close" data-close aria-label="Schließen">×</button></div><p>Alle tragen bei jedem Wurf dieselbe Summe aus zwei Würfeln (2–12) in ein freies Feld ein. Nach 25 Würfen gewinnt die höchste Punktzahl.</p><table class="rules-table"><tbody><tr><td>Ein Paar</td><td>1</td></tr><tr><td>Drilling</td><td>3</td></tr><tr><td>Vierling</td><td>6</td></tr><tr><td>Fünfling</td><td>10</td></tr><tr><td>Zwei Paare</td><td>3</td></tr><tr><td>Full House · Drilling + Paar</td><td>8</td></tr><tr><td>Straße mit 7</td><td>8</td></tr><tr><td>Straße ohne 7</td><td>12</td></tr></tbody></table><p>Eine Straße besteht aus fünf aufeinanderfolgenden Zahlen in beliebiger Reihenfolge. Pro Linie zählt nur die passende Kombination. Keine Kombination: 0 Punkte.</p><p><strong class="cyan">Beide Diagonalen zählen doppelt.</strong> Zeilen, Spalten und Diagonalen werden getrennt addiert. Unfertige Linien bleiben zunächst ohne Wertung. Tippe auf eine Linienpunktzahl, um ihre Wertung zu sehen.</p><p>Jeder öffnet diesen Link auf seinem eigenen Handy und führt seinen eigenen Block. Eure Eingaben bleiben auf dem jeweiligen Gerät. Vergleicht am Ende die Gesamtpunkte.</p><p><a href="https://www.nsv.de/wp-content/uploads/2024/04/Knister_D.pdf" target="_blank" rel="noopener noreferrer">Original-Spielanleitung von NSV ↗</a><br><small>Knister: Heinz Wüppen / NSV. Dies ist ein inoffizieller digitaler Spielblock.</small></p></dialog>
-<dialog id="confirmDialog" aria-labelledby="confirmTitle"><div class="dialog-top"><h2 id="confirmTitle">Neues Spiel?</h2><button class="close" data-close aria-label="Schließen">×</button></div><p id="confirmText"></p><div class="dialog-actions"><button data-close>Abbrechen</button><button id="confirmOk" class="accent">Neues Spiel starten</button></div></dialog>
-<dialog id="historyDialog" aria-labelledby="historyTitle"><div class="dialog-top"><h2 id="historyTitle">Bisherige Spiele</h2><button class="close" data-close aria-label="Schließen">×</button></div><div id="historyContent"></div></dialog>
-<dialog id="lineDialog" aria-labelledby="lineTitle"><div class="dialog-top"><h2 id="lineTitle">Wertung</h2><button class="close" data-close aria-label="Schließen">×</button></div><div id="lineContent"></div></dialog>
-<div class="toast" id="toast" role="status"></div><div class="sr-only" id="announcement" aria-live="polite"></div>
-<script>
-'use strict';
-const $=id=>document.getElementById(id), KEY='knister-spielblock-v2', LEGACY_KEY='knister-spielblock-v1';
-const escapeHTML=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,8);
-const makePlayer=name=>({id:uid(),name,board:Array(25).fill(null)});
-let state={version:2,round:1,active:null,players:[makePlayer('Mein Spielblock')],history:[]};state.active=state.players[0].id;
-let selected=null,undo=[],toastTimer,saveProblem=false,loadProblem=false;
-function validBoard(b){return Array.isArray(b)&&b.length===25&&b.every(n=>n===null||(Number.isInteger(n)&&n>=2&&n<=12));}
-try{const raw=localStorage.getItem(KEY)||localStorage.getItem(LEGACY_KEY);if(raw){const s=JSON.parse(raw);if(![1,2].includes(s.version)||!Number.isInteger(s.round)||s.round<1||!Array.isArray(s.players)||!s.players.length||s.players.length>12||!s.players.every(p=>typeof p.id==='string'&&typeof p.name==='string'&&p.name.trim()&&p.name.length<=24&&validBoard(p.board))||new Set(s.players.map(p=>p.id)).size!==s.players.length||!Array.isArray(s.history))throw Error('Ungültiger Spielstand');state=s;if(!state.players.some(p=>p.id===state.active))state.active=state.players[0].id;state.players=[state.players.find(p=>p.id===state.active)];state.version=2;state.history=state.history.filter(h=>Number.isInteger(h.round)&&Array.isArray(h.results)&&h.results.every(r=>typeof r.name==='string'&&Number.isFinite(r.score)&&Number.isInteger(r.filled)));}}catch(e){loadProblem=true;}
-function current(){return state.players.find(p=>p.id===state.active);}
-function count(p){return p.board.filter(n=>n!==null).length;}
-function scoreLine(values){if(values.some(n=>n===null))return {points:0,label:'Noch nicht vollständig',complete:false};const freq={};for(const n of values)freq[n]=(freq[n]||0)+1;const counts=Object.values(freq).sort((a,b)=>b-a), nums=[...new Set(values)].sort((a,b)=>a-b);let points=0,label='Keine Kombination';if(counts[0]===5){points=10;label='Fünfling';}else if(counts[0]===4){points=6;label='Vierling';}else if(counts[0]===3&&counts[1]===2){points=8;label='Full House';}else if(counts[0]===3){points=3;label='Drilling';}else if(counts[0]===2&&counts[1]===2){points=3;label='Zwei Paare';}else if(counts[0]===2){points=1;label='Ein Paar';}else if(nums.length===5&&nums[4]-nums[0]===4){points=nums.includes(7)?8:12;label=nums.includes(7)?'Straße mit 7':'Straße ohne 7';}return {points,label,complete:true};}
-const lineIndices=[...Array.from({length:5},(_,r)=>Array.from({length:5},(_,c)=>r*5+c)),...Array.from({length:5},(_,c)=>Array.from({length:5},(_,r)=>r*5+c)),[0,6,12,18,24],[20,16,12,8,4]];
-function scoreBoard(board){const lines=lineIndices.map((ids,i)=>{const value=scoreLine(ids.map(j=>board[j]));return {...value,points:value.points*(i>=10?2:1)};});const sum=(a,b)=>lines.slice(a,b).reduce((s,l)=>s+l.points,0);return {lines,rows:sum(0,5),cols:sum(5,10),diags:sum(10,12),total:sum(0,12)};}
-function save(){if(loadProblem){$('saveStatus').textContent='Alter Spielstand nicht lesbar – neue Eingaben nur für diese Sitzung.';$('saveStatus').classList.add('warning');return;}try{localStorage.setItem(KEY,JSON.stringify(state));saveProblem=false;}catch(e){saveProblem=true;}$('saveStatus').textContent=saveProblem?'Speichern nicht möglich – diese Sitzung geöffnet lassen.':'Auf diesem Gerät gespeichert';$('saveStatus').classList.toggle('warning',saveProblem);}
-function toast(text){$('toast').textContent=text;$('toast').classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>$('toast').classList.remove('show'),2800);}
-function render(){const p=current(),s=scoreBoard(p.board),filled=count(p);$('playerTitle').textContent=/^Spieler \d+$/.test(p.name)?'Mein Spielblock':p.name;$('round').textContent='Spiel '+String(state.round).padStart(2,'0');$('progressText').textContent=filled+' / 25 Felder';$('progressBar').style.width=(filled*4)+'%';
-let html='';for(let r=0;r<5;r++){for(let c=0;c<5;c++){const i=r*5+c,v=p.board[i];html+=`<button class="cell ${r===c||r+c===4?'diag':''} ${v===null?'empty':''} ${selected===i?'selected':''}" data-cell="${i}" aria-pressed="${selected===i}" aria-label="Zeile ${r+1}, Spalte ${c+1}: ${v===null?'leer':v}">${v===null?'·':v}</button>`;}html+=scoreButton(r,s.lines[r]);}for(let c=0;c<5;c++)html+=scoreButton(c+5,s.lines[c+5]);$('grid').innerHTML=html;
-$('diagA').textContent=s.lines[10].complete?s.lines[10].points:'–';$('diagB').textContent=s.lines[11].complete?s.lines[11].points:'–';$('total').textContent=$('mobileTotal').textContent=s.total;$('rowTotal').textContent=s.rows;$('colTotal').textContent=s.cols;$('diagTotal').textContent=s.diags;$('scoreStatus').textContent=filled===25?'Block vollständig. Alle 12 Linien sind gewertet.':filled+' von 25 Feldern · Nur volle Linien zählen.';
-$('inputTitle').textContent=selected===null?(filled===25?'Block vollständig':'Feld antippen'):'Zeile '+(Math.floor(selected/5)+1)+' · Spalte '+(selected%5+1);$('inputHint').textContent=selected===null?(filled===25?'Korrekturen bleiben möglich.':'Dann die Würfelsumme.'):'Würfelsumme wählen';document.querySelectorAll('[data-value]').forEach(b=>b.disabled=selected===null);$('eraseBtn').disabled=selected===null||p.board[selected]===null;$('undoBtn').disabled=!undo.length;
-$('banner').classList.toggle('show',filled===25);if(filled===25){$('banner').innerHTML='<strong>Dein Block ist fertig!</strong>'+s.total+' Punkte · Vergleicht eure Ergebnisse am Tisch.';}}
-function scoreButton(i,l){return `<button class="line-score ${l.complete?'scored':''}" data-line="${i}" aria-label="${i<5?'Zeile '+(i+1):'Spalte '+(i-4)}: ${l.complete?l.points+' Punkte':'unvollständig'}">${l.complete?l.points:'–'}</button>`;}
-function put(value){if(selected===null)return;if(value!==null&&(!Number.isInteger(value)||value<2||value>12))throw Error('Nur Zahlen von 2 bis 12');const p=current(),i=selected;if(p.board[i]===value)return;undo.push({id:p.id,index:i,old:p.board[i]});if(undo.length>300)undo.shift();p.board[i]=value;selected=null;render();save();$('announcement').textContent=(value===null?'Feld gelöscht.':value+' eingetragen.')+' '+scoreBoard(p.board).total+' Punkte.';if(count(p)===25)toast(p.name+': '+scoreBoard(p.board).total+' Punkte!');}
-function showLine(i){const p=current(),values=lineIndices[i].map(j=>p.board[j]),s=scoreLine(values);$('lineTitle').textContent=i<5?'Zeile '+(i+1):i<10?'Spalte '+(i-4):i===10?'Diagonale ↘':'Diagonale ↗';$('lineContent').innerHTML='<div class="line-values">'+values.map(n=>'<span>'+(n??'·')+'</span>').join('')+'</div><h2>'+s.label+'</h2><p>'+(s.complete?(i>=10?s.points+' Punkte × 2 für die Diagonale.':'Wertung dieser Linie.'):'Diese Linie zählt, sobald alle fünf Felder gefüllt sind.')+'</p><div class="line-result">'+(s.complete?s.points*(i>=10?2:1)+' Punkte':'Noch offen')+'</div>';$('lineDialog').showModal();}
-$('keys').innerHTML=Array.from({length:11},(_,i)=>`<button class="key" data-value="${i+2}" disabled>${i+2}</button>`).join('')+'<button class="key erase" id="eraseBtn" aria-label="Ausgewähltes Feld löschen" disabled>Löschen</button>';
-document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;if(b.hasAttribute('data-cell')){selected=Number(b.dataset.cell);render();document.querySelector('[data-cell="'+selected+'"]').focus({preventScroll:true});}else if(b.hasAttribute('data-value'))put(Number(b.dataset.value));else if(b.hasAttribute('data-line'))showLine(Number(b.dataset.line));else if(b.hasAttribute('data-close'))b.closest('dialog').close();});
-$('eraseBtn').onclick=()=>put(null);$('undoBtn').onclick=()=>{const u=undo.pop();if(!u)return;const p=state.players.find(p=>p.id===u.id);if(p){p.board[u.index]=u.old;state.active=p.id;selected=u.index;render();save();toast('Letzte Eingabe zurückgenommen');}};
-$('rulesBtn').onclick=()=>$('rulesDialog').showModal();
-$('newBtn').onclick=()=>{const used=state.players.some(p=>count(p)>0),complete=state.players.every(p=>count(p)===25);$('confirmText').textContent=used?(complete?'Dein Ergebnis wird unter „Bisherige Spiele“ abgelegt. Danach startest du mit einem leeren Block.':'Dein Block ist noch nicht vollständig. Der Zwischenstand wird als abgebrochenes Spiel abgelegt; danach startest du mit einem leeren Block.'):'Du startest mit einem leeren Block.';$('confirmDialog').showModal();};$('confirmOk').onclick=()=>{if(state.players.some(p=>count(p)>0)){state.history.unshift({round:state.round,date:new Date().toISOString(),complete:state.players.every(p=>count(p)===25),results:state.players.map(p=>({name:p.name,score:scoreBoard(p.board).total,filled:count(p)}))});state.round++;}state.players.forEach(p=>p.board=Array(25).fill(null));state.active=state.players[0].id;undo=[];selected=null;render();save();$('confirmDialog').close();toast('Bereit für die nächste Runde');};
-$('historyBtn').onclick=()=>{$('historyContent').innerHTML=state.history.length?state.history.map(h=>'<div class="history-row"><h3>Spiel '+h.round+' · '+(h.complete?'Beendet':'Abgebrochen')+'</h3>'+[...h.results].sort((a,b)=>b.score-a.score).map(r=>'<p><span>'+escapeHTML(r.name)+(h.complete?'':' ('+r.filled+'/25)')+'</span><strong>'+r.score+' Punkte</strong></p>').join('')+'</div>').join(''):'<p>Noch keine vergangenen Spiele. Beim Start eines neuen Spiels wird der bisherige Stand hier abgelegt.</p>';$('historyDialog').showModal();};
-document.addEventListener('keydown',e=>{if(document.querySelector('dialog[open]')||e.target.tagName==='INPUT')return;if(e.key==='Escape'){selected=null;render();}if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='z'){e.preventDefault();$('undoBtn').click();}if((e.key==='Delete'||e.key==='Backspace')&&selected!==null){e.preventDefault();put(null);}});
-render();if(loadProblem){$('saveStatus').textContent='Gespeicherter Stand nicht lesbar – nur diese Sitzung nutzbar.';$('saveStatus').classList.add('warning');}else save();
-if(document.modelContext?.registerTool){try{Promise.resolve(document.modelContext.registerTool({name:'read_knister_scores',description:'Liest die aktuellen Knister-Spielstände auf diesem Gerät.',inputSchema:{type:'object',properties:{},additionalProperties:false},annotations:{readOnlyHint:true,untrustedContentHint:true},execute:()=>({round:state.round,players:state.players.map(p=>({name:p.name,filled:count(p),...scoreBoard(p.board)}))})})).catch(()=>{});}catch(e){}}
-</script>
+<div class="card joinbox">
+<label class="label" for="nameInput">Dein Name</label>
+<input id="nameInput" class="field" maxlength="20" placeholder="z. B. Arndt" autocomplete="nickname">
+<div class="actions">
+<button id="hostBtn" class="btn primary">✨ Neuen Raum erstellen</button>
+<div style="height:3px"></div>
+<label class="label" for="codeInput">Raumcode</label>
+<input id="codeInput" class="field code" maxlength="5" placeholder="ABCDE" autocapitalize="characters">
+<button id="joinBtn" class="btn soft">Raum beitreten</button>
+</div>
+<div class="mini">Keine Anmeldung. Die Spielverbindung läuft direkt zwischen euren Browsern.</div>
+</div>
+</div>
+</section>
+
+<section id="lobby" class="screen">
+<div id="lobbyMsg" class="message hide"></div>
+<div class="lobby">
+<div class="card room-card">
+<div class="label">Euer Spielraum</div>
+<h2>Alle mit demselben Code reinholen</h2>
+<div class="roomcode"><span>Raumcode</span><strong id="roomCode">-----</strong></div>
+<p class="mini">Der Ersteller bleibt während des Spiels online. Sobald alle da sind, startet er die Runde.</p>
+<button id="startBtn" class="btn primary" style="width:100%">Spiel starten</button>
+<button id="leaveBtn" class="btn" style="width:100%;margin-top:9px">Raum verlassen</button>
+</div>
+<div class="card players-card">
+<div class="section-title"><h2>Mitspieler</h2><small id="playerCount">0 Spieler</small></div>
+<div id="lobbyPlayers" class="players"></div>
+</div>
+</div>
+</section>
+
+<section id="game" class="screen">
+<div id="gameMsg" class="message hide"></div>
+<div class="game">
+<div class="card board-card">
+<div class="section-title"><div><div class="label">Dein Spielblock</div><h2 id="gameName">Spieler</h2></div><small id="turnLabel">Wurf 0 / 25</small></div>
+<div class="bar"><span id="progress" style="width:0%"></span></div>
+<div id="board" class="grid"></div>
+<div class="scoreline">
+<div class="scorebox"><small>Zeilen</small><b id="sRows">0</b></div>
+<div class="scorebox"><small>Spalten</small><b id="sCols">0</b></div>
+<div class="scorebox"><small>Diagonalen ×2</small><b id="sDiag">0</b></div>
+<div class="scorebox"><small>Gesamt</small><b id="sTotal">0</b></div>
+</div>
+</div>
+<div class="card status-card">
+<div id="winnerBox" class="winner hide"></div>
+<div class="turnbox">
+<div class="label">Aktuelle Würfelsumme</div>
+<div id="currentRoll" class="big">–</div>
+<div id="turnHint" class="mini">Der Spielleiter gibt die erste Summe ein.</div>
+</div>
+<div id="hostControls" class="hostroll hide">
+<div class="label">Neue Würfelsumme</div>
+<div id="rollKeys" class="rollkeys"></div>
+<div class="mini" id="hostHint">Erst wenn alle platziert haben, geht es weiter.</div>
+</div>
+<hr style="border:0;border-top:1px solid var(--line);margin:16px 0">
+<div class="section-title"><h2>Live-Stand</h2><small id="readyCount"></small></div>
+<div id="standings" class="standings"></div>
+<button id="newGameBtn" class="btn primary hide" style="width:100%;margin-top:14px">Neue Runde</button>
+<button id="exitGameBtn" class="btn" style="width:100%;margin-top:9px">Zurück zur Startseite</button>
+</div>
+</div>
+</section>
+<div class="foot">Knister Online · inoffizieller digitaler Spielblock · Verbindung via WebRTC</div>
+</div>
+
+<script src="app.js"></script>
 </body>
 </html>
