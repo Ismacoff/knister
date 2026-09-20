@@ -56,3 +56,32 @@ button,input{font:inherit}button{cursor:pointer;touch-action:manipulation}.app{m
 @keyframes stageImpact{0%{transform:translateY(0)}35%{transform:translateY(3px)}100%{transform:translateY(0)}}
 @media(max-width:760px){.dice-stage{min-height:132px;gap:20px}.die-wrap{width:76px;height:92px}.die3d{--s:62px}.die3d .front{transform:translateZ(31px)}.die3d .back{transform:rotateY(180deg) translateZ(31px)}.die3d .right{transform:rotateY(90deg) translateZ(31px)}.die3d .left{transform:rotateY(-90deg) translateZ(31px)}.die3d .top{transform:rotateX(90deg) translateZ(31px)}.die3d .bottom{transform:rotateX(-90deg) translateZ(31px)}.face{font-size:48px}}
 @media(prefers-reduced-motion:reduce){.die-wrap.rolling,.die-wrap.rolling .die3d,.die-wrap.rolling .dice-shadow,.dice-stage.impact{animation:none!important}}
+
+/* Reliable dice faces + board roll overlay */
+.board-wrap{position:relative;isolation:isolate}
+.board-dice-overlay{position:absolute;inset:-8px;z-index:20;pointer-events:none;display:none;perspective:900px;overflow:visible}
+.board-dice-overlay.show{display:block}
+.roll-cube-wrap{position:absolute;width:74px;height:74px;left:50%;top:42%;transform-style:preserve-3d}
+.cube3d{--cube:62px;position:relative;width:var(--cube);height:var(--cube);transform-style:preserve-3d;will-change:transform}
+.cube-face{position:absolute;inset:0;border-radius:13px;border:1px solid rgba(37,59,61,.25);background-color:#fffefa;box-shadow:inset 4px 4px 9px #fff,inset -6px -6px 11px rgba(50,70,66,.12),0 3px 8px rgba(28,47,45,.18);backface-visibility:hidden;background-repeat:no-repeat}
+.cf-front{transform:translateZ(31px)}.cf-back{transform:rotateY(180deg) translateZ(31px)}.cf-right{transform:rotateY(90deg) translateZ(31px)}.cf-left{transform:rotateY(-90deg) translateZ(31px)}.cf-top{transform:rotateX(90deg) translateZ(31px)}.cf-bottom{transform:rotateX(-90deg) translateZ(31px)}
+.cube-face[data-face="1"],.result-die[data-value="1"]{background-image:radial-gradient(circle at 50% 50%,#263b3d 0 7px,transparent 7.7px)}
+.cube-face[data-face="2"],.result-die[data-value="2"]{background-image:radial-gradient(circle at 28% 28%,#263b3d 0 7px,transparent 7.7px),radial-gradient(circle at 72% 72%,#263b3d 0 7px,transparent 7.7px)}
+.cube-face[data-face="3"],.result-die[data-value="3"]{background-image:radial-gradient(circle at 28% 28%,#263b3d 0 7px,transparent 7.7px),radial-gradient(circle at 50% 50%,#263b3d 0 7px,transparent 7.7px),radial-gradient(circle at 72% 72%,#263b3d 0 7px,transparent 7.7px)}
+.cube-face[data-face="4"],.result-die[data-value="4"]{background-image:radial-gradient(circle at 28% 28%,#263b3d 0 7px,transparent 7.7px),radial-gradient(circle at 72% 28%,#263b3d 0 7px,transparent 7.7px),radial-gradient(circle at 28% 72%,#263b3d 0 7px,transparent 7.7px),radial-gradient(circle at 72% 72%,#263b3d 0 7px,transparent 7.7px)}
+.cube-face[data-face="5"],.result-die[data-value="5"]{background-image:radial-gradient(circle at 28% 28%,#263b3d 0 7px,transparent 7.7px),radial-gradient(circle at 72% 28%,#263b3d 0 7px,transparent 7.7px),radial-gradient(circle at 50% 50%,#263b3d 0 7px,transparent 7.7px),radial-gradient(circle at 28% 72%,#263b3d 0 7px,transparent 7.7px),radial-gradient(circle at 72% 72%,#263b3d 0 7px,transparent 7.7px)}
+.cube-face[data-face="6"],.result-die[data-value="6"]{background-image:radial-gradient(circle at 28% 24%,#263b3d 0 7px,transparent 7.7px),radial-gradient(circle at 72% 24%,#263b3d 0 7px,transparent 7.7px),radial-gradient(circle at 28% 50%,#263b3d 0 7px,transparent 7.7px),radial-gradient(circle at 72% 50%,#263b3d 0 7px,transparent 7.7px),radial-gradient(circle at 28% 76%,#263b3d 0 7px,transparent 7.7px),radial-gradient(circle at 72% 76%,#263b3d 0 7px,transparent 7.7px)}
+.roll-shadow{position:absolute;left:50%;bottom:-20px;width:64px;height:18px;transform:translateX(-50%);background:radial-gradient(ellipse,rgba(29,45,43,.38),transparent 70%);filter:blur(2px)}
+.board-dice-overlay.show .roll-a{animation:boardTossA 1.7s cubic-bezier(.12,.72,.18,1) forwards}
+.board-dice-overlay.show .roll-b{animation:boardTossB 1.7s cubic-bezier(.12,.72,.18,1) forwards}
+.board-dice-overlay.show .roll-a .cube3d{animation:boardSpinA 1.7s cubic-bezier(.12,.68,.18,1) forwards}
+.board-dice-overlay.show .roll-b .cube3d{animation:boardSpinB 1.7s cubic-bezier(.12,.68,.18,1) forwards}
+@keyframes boardTossA{0%{left:-10%;top:-18%;transform:scale(.58)}20%{left:24%;top:10%;transform:scale(1.08)}42%{left:62%;top:34%;transform:scale(.92)}58%{left:40%;top:20%;transform:scale(1.03)}76%{left:58%;top:48%;transform:scale(.97)}100%{left:44%;top:38%;transform:scale(1)}}
+@keyframes boardTossB{0%{left:106%;top:-24%;transform:scale(.56)}22%{left:70%;top:12%;transform:scale(1.06)}44%{left:28%;top:40%;transform:scale(.91)}60%{left:52%;top:24%;transform:scale(1.04)}78%{left:38%;top:54%;transform:scale(.97)}100%{left:58%;top:46%;transform:scale(1)}}
+@keyframes boardSpinA{0%{transform:rotateX(0) rotateY(0) rotateZ(0)}28%{transform:rotateX(520deg) rotateY(400deg) rotateZ(210deg)}60%{transform:rotateX(970deg) rotateY(850deg) rotateZ(430deg)}100%{transform:rotateX(1390deg) rotateY(1220deg) rotateZ(610deg)}}
+@keyframes boardSpinB{0%{transform:rotateX(0) rotateY(0) rotateZ(0)}28%{transform:rotateX(-480deg) rotateY(510deg) rotateZ(-230deg)}60%{transform:rotateX(-920deg) rotateY(920deg) rotateZ(-440deg)}100%{transform:rotateX(-1360deg) rotateY(1290deg) rotateZ(-630deg)}}
+.dice-stage.compact{min-height:auto;display:flex;gap:14px;justify-content:center;margin:8px 0 6px;perspective:none}
+.result-die{width:62px;height:62px;border-radius:14px;border:1px solid #cbd7d2;background-color:#fffefa;background-repeat:no-repeat;box-shadow:inset 4px 4px 9px #fff,inset -5px -5px 10px rgba(50,70,66,.10),0 8px 14px rgba(37,59,61,.15);transform:rotate(-3deg)}
+.result-die:nth-child(2){transform:rotate(4deg)}
+@media(max-width:760px){.roll-cube-wrap{width:62px;height:62px}.cube3d{--cube:54px}.cf-front{transform:translateZ(27px)}.cf-back{transform:rotateY(180deg) translateZ(27px)}.cf-right{transform:rotateY(90deg) translateZ(27px)}.cf-left{transform:rotateY(-90deg) translateZ(27px)}.cf-top{transform:rotateX(90deg) translateZ(27px)}.cf-bottom{transform:rotateX(-90deg) translateZ(27px)}.result-die{width:56px;height:56px}}
+@media(prefers-reduced-motion:reduce){.board-dice-overlay.show .roll-cube-wrap,.board-dice-overlay.show .cube3d{animation-duration:.01ms!important}}
