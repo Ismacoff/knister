@@ -76,6 +76,8 @@ function renderBoard(){
  const sc=score(myBoard);$('sRows').textContent=sc.rows;$('sCols').textContent=sc.cols;$('sDiag').textContent=sc.diag;$('sTotal').textContent=sc.total;
  $('progress').style.width=(myBoard.filter(v=>v!==null).length*4)+'%';
  $('board').innerHTML=myBoard.map((v,i)=>`<button class="cell ${(Math.floor(i/5)===i%5||Math.floor(i/5)+i%5===4)?'diag':''} ${v===null&&room.currentRoll!==null&&!myPlaced?'ready':''}" data-cell="${i}" ${v!==null||room.currentRoll===null||myPlaced||room.phase!=='game'?'disabled':''}>${v==null?'·':v}</button>`).join('');
+ const rowValues=Array.from({length:5},(_,r)=>scoreLine(myBoard.slice(r*5,r*5+5)));
+ $('rowScores').innerHTML=rowValues.map((v,r)=>`<div title="Reihe ${r+1}: ${v} Punkte"><small>R${r+1}</small><b>${v}</b></div>`).join('');
 }
 function renderFromRoom(){
  if(room.phase==='lobby'){renderLobby();return}
