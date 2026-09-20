@@ -71,13 +71,16 @@
 <div class="card status-card">
 <div id="winnerBox" class="winner hide"></div>
 <div class="turnbox">
-<div class="label">Aktuelle Würfelsumme</div>
-<div id="currentRoll" class="big">–</div>
-<div id="turnHint" class="mini">Der Spielleiter gibt die erste Summe ein.</div>
+<div class="label">Aktueller Wurf</div>
+<div id="diceStage" class="dice-stage" aria-label="Zwei Würfel">
+  <div id="die1" class="die" data-value="1" aria-label="Würfel 1"></div>
+  <div id="die2" class="die" data-value="1" aria-label="Würfel 2"></div>
+</div>
+<div class="sumline"><span>Summe</span><div id="currentRoll" class="big">–</div></div>
+<div id="turnHint" class="mini">Der Spielleiter würfelt zuerst.</div>
 </div>
 <div id="hostControls" class="hostroll hide">
-<div class="label">Neue Würfelsumme</div>
-<div id="rollKeys" class="rollkeys"></div>
+<button id="diceBtn" class="btn dice-btn">🎲 Würfeln</button>
 <div class="mini" id="hostHint">Erst wenn alle platziert haben, geht es weiter.</div>
 </div>
 <hr style="border:0;border-top:1px solid var(--line);margin:16px 0">
