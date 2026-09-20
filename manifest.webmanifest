@@ -7,13 +7,32 @@
   "start_url": "/knister/",
   "scope": "/knister/",
   "display": "standalone",
-  "display_override": ["window-controls-overlay", "standalone"],
   "orientation": "portrait",
   "background_color": "#f7f5ef",
   "theme_color": "#c91f3c",
   "icons": [
-    {"src": "icons/knister-premium-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any"},
-    {"src": "icons/knister-premium-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any"},
-    {"src": "icons/knister-premium-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable"}
+    {
+      "src": "/knister/icons/knister-premium-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/knister/icons/knister-premium-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/knister/icons/knister-premium-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "prefer_related_applications": false,
+  "categories": [
+    "games",
+    "entertainment"
   ]
 }
