@@ -62,29 +62,9 @@
 <div class="bar"><span id="progress" style="width:0%"></span></div>
 <div class="board-wrap">
   <div id="board" class="grid"></div>
-  <div id="boardDiceOverlay" class="board-dice-overlay" aria-hidden="true">
-    <div class="roll-cube-wrap roll-a">
-      <div id="rollDie1" class="cube3d">
-        <span class="cube-face cf-front" data-face="1"></span>
-        <span class="cube-face cf-back" data-face="6"></span>
-        <span class="cube-face cf-right" data-face="3"></span>
-        <span class="cube-face cf-left" data-face="4"></span>
-        <span class="cube-face cf-top" data-face="2"></span>
-        <span class="cube-face cf-bottom" data-face="5"></span>
-      </div>
-      <span class="roll-shadow"></span>
-    </div>
-    <div class="roll-cube-wrap roll-b">
-      <div id="rollDie2" class="cube3d">
-        <span class="cube-face cf-front" data-face="1"></span>
-        <span class="cube-face cf-back" data-face="6"></span>
-        <span class="cube-face cf-right" data-face="3"></span>
-        <span class="cube-face cf-left" data-face="4"></span>
-        <span class="cube-face cf-top" data-face="2"></span>
-        <span class="cube-face cf-bottom" data-face="5"></span>
-      </div>
-      <span class="roll-shadow"></span>
-    </div>
+  <div id="diceOverlay" class="dice-overlay" aria-hidden="true">
+    <div id="flyDie1" class="fly-die" data-value="1"><span class="pip center"></span><span class="pip tl"></span><span class="pip tr"></span><span class="pip ml"></span><span class="pip mr"></span><span class="pip bl"></span><span class="pip br"></span><span class="fly-shadow"></span></div>
+    <div id="flyDie2" class="fly-die" data-value="1"><span class="pip center"></span><span class="pip tl"></span><span class="pip tr"></span><span class="pip ml"></span><span class="pip mr"></span><span class="pip bl"></span><span class="pip br"></span><span class="fly-shadow"></span></div>
   </div>
 </div>
 <div class="scoreline">
@@ -99,8 +79,8 @@
 <div class="turnbox">
 <div class="label">Aktueller Wurf</div>
 <div id="diceStage" class="dice-stage compact" aria-label="Gewürfeltes Ergebnis">
-  <div id="die1" class="result-die" data-value="1" aria-label="Würfel 1"></div>
-  <div id="die2" class="result-die" data-value="1" aria-label="Würfel 2"></div>
+  <div id="die1" class="result-die" data-value="1" aria-label="Würfel 1"><span class="pip center"></span><span class="pip tl"></span><span class="pip tr"></span><span class="pip ml"></span><span class="pip mr"></span><span class="pip bl"></span><span class="pip br"></span></div>
+  <div id="die2" class="result-die" data-value="1" aria-label="Würfel 2"><span class="pip center"></span><span class="pip tl"></span><span class="pip tr"></span><span class="pip ml"></span><span class="pip mr"></span><span class="pip bl"></span><span class="pip br"></span></div>
 </div>
 <div class="sumline"><span>Summe</span><div id="currentRoll" class="big">–</div></div>
 <div id="turnHint" class="mini">Der Spielleiter würfelt zuerst.</div>
