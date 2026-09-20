@@ -13,42 +13,45 @@
 <link rel="apple-touch-icon" href="icons/knister-premium-192.png?v=2">
 <meta name="description" content="Knister Online – gemeinsam über das Internet spielen.">
 <title>Knister Online</title>
-<link rel="stylesheet" href="styles.css?v=20260920-turns10">
+<link rel="stylesheet" href="styles.css?v=20260920-themes11">
 <script src="https://cdn.jsdelivr.net/npm/peerjs@1.5.5/dist/peerjs.min.js"></script>
 </head>
 <body>
 <div class="app">
-<header class="top"><div class="brand">knister <i>online</i></div><div class="pill"><span id="netDot" class="dot"></span><span id="netText">Bereit</span></div></header>
+<header class="top"><div class="brand">knister <i>online</i></div><div class="top-actions"><button id="settingsBtn" class="settings-btn" aria-label="Darstellung auswählen" title="Darstellung auswählen"><span>⚙</span></button><div class="pill"><span id="netDot" class="dot"></span><span id="netText">Bereit</span></div></div></header>
 
 <section id="home" class="screen active">
-<div class="home">
-<div class="card hero">
-  <div class="hero-copy">
-    <div class="label">Das Würfelspiel · jetzt gemeinsam online</div>
-    <h1>Euer Spiel.<br><span>Eure Runde.</span><br>Überall.</h1>
-    <p>Knister verbindet eure Handys zu einem gemeinsamen Spieltisch – ohne Anmeldung, ohne Kosten und sofort startklar.</p>
-    <div class="steps"><div class="step"><b>1</b>Raum erstellen</div><div class="step"><b>2</b>Code teilen</div><div class="step"><b>3</b>Losknistern</div></div>
+<div class="lounge-home">
+  <div class="card welcome-panel">
+    <div class="welcome-badge"><span></span> Online-Spielelounge</div>
+    <img class="welcome-icon" src="icons/knister-premium-v2-512.png?v=4" alt="Knister – rote Glaswürfel">
+    <div class="welcome-copy">
+      <h1>Knister</h1>
+      <p>Würfeln. Eintragen. Gewinnen.</p>
+    </div>
+    <div class="welcome-features">
+      <span><b>●</b> Live verbunden</span>
+      <span>Ohne Anmeldung</span>
+      <span>Kostenlos</span>
+    </div>
   </div>
-  <div class="hero-showcase" aria-hidden="true">
-    <div class="icon-glow"></div>
-    <img src="icons/knister-premium-v2-512.png?v=4" alt="">
-    <span class="showcase-chip chip-live"><i></i> Live verbunden</span>
-    <span class="showcase-chip chip-free">Kostenlos</span>
+  <div class="card entry-panel">
+    <div class="entry-heading">
+      <div class="label">Neue Spielrunde</div>
+      <h2>Wer spielt mit?</h2>
+      <p>Gib deinen Namen ein und eröffne einen Raum oder tritt mit einem Code bei.</p>
+    </div>
+    <label class="label" for="nameInput">Dein Spielername</label>
+    <input id="nameInput" class="field" maxlength="20" placeholder="z. B. Arndt" autocomplete="nickname">
+    <button id="hostBtn" class="btn primary create-room-btn"><span>＋</span> Raum erstellen</button>
+    <div class="entry-divider"><span>oder beitreten</span></div>
+    <div class="join-row">
+      <input id="codeInput" class="field code" maxlength="5" placeholder="CODE" aria-label="Raumcode" autocapitalize="characters">
+      <button id="joinBtn" class="btn soft">Beitreten</button>
+    </div>
+    <button id="installBtn" class="btn install-btn hide"><span>↓</span> Knister installieren</button>
+    <div class="privacy-note"><span>✓</span> Direkte, private Verbindung zwischen euren Handys</div>
   </div>
-</div>
-<div class="card joinbox">
-<label class="label" for="nameInput">Dein Name</label>
-<input id="nameInput" class="field" maxlength="20" placeholder="z. B. Arndt" autocomplete="nickname">
-<div class="actions">
-<button id="hostBtn" class="btn primary">✨ Neuen Raum erstellen</button>
-<div style="height:3px"></div>
-<label class="label" for="codeInput">Raumcode</label>
-<input id="codeInput" class="field code" maxlength="5" placeholder="ABCDE" autocapitalize="characters">
-<button id="joinBtn" class="btn soft">Raum beitreten</button>
-<button id="installBtn" class="btn install-btn hide"><span>↓</span> Knister installieren</button>
-</div>
-<div class="mini">Keine Anmeldung. Die Spielverbindung läuft direkt zwischen euren Browsern.</div>
-</div>
 </div>
 </section>
 
@@ -140,9 +143,20 @@
 </div>
 </div>
 </section>
+<div id="themeModal" class="theme-modal hide" role="dialog" aria-modal="true" aria-labelledby="themeTitle">
+  <div class="theme-sheet">
+    <div class="theme-head"><div><div class="label">Deine Darstellung</div><h2 id="themeTitle">Wähle dein Spielthema</h2></div><button id="closeThemeBtn" class="modal-close" aria-label="Schließen">×</button></div>
+    <p class="theme-intro">Diese Auswahl gilt nur auf deinem Handy. Deine Mitspieler können ihr eigenes Design wählen.</p>
+    <div class="theme-options">
+      <button class="theme-choice" data-theme-choice="classic"><span class="theme-preview preview-classic"><i></i><i></i><i></i></span><span><b>Klassisch</b><small>Hell, warm und freundlich</small></span><em>✓</em></button>
+      <button class="theme-choice" data-theme-choice="space"><span class="theme-preview preview-space"><i></i><i></i><i></i></span><span><b>Space</b><small>Dunkel, neon und futuristisch</small></span><em>✓</em></button>
+      <button class="theme-choice" data-theme-choice="nature"><span class="theme-preview preview-nature"><i></i><i></i><i></i></span><span><b>Natur</b><small>Salbei, Holz und Waldgrün</small></span><em>✓</em></button>
+    </div>
+  </div>
+</div>
 <div class="foot">Knister Online · inoffizieller digitaler Spielblock · Verbindung via WebRTC</div>
 </div>
 
-<script src="app.js?v=20260920-turns10"></script>
+<script src="app.js?v=20260920-themes11"></script>
 </body>
 </html>
