@@ -4,12 +4,16 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#c91f3c">
-<link rel="manifest" href="manifest.webmanifest?v=1">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Knister">
+<link rel="manifest" href="manifest.webmanifest?v=3">
 <link rel="icon" type="image/png" sizes="192x192" href="icons/knister-premium-192.png?v=2">
 <link rel="apple-touch-icon" href="icons/knister-premium-192.png?v=2">
 <meta name="description" content="Knister Online – gemeinsam über das Internet spielen.">
 <title>Knister Online</title>
-<link rel="stylesheet" href="styles.css?v=20260920-undo7">
+<link rel="stylesheet" href="styles.css?v=20260920-premium8">
 <script src="https://cdn.jsdelivr.net/npm/peerjs@1.5.5/dist/peerjs.min.js"></script>
 </head>
 <body>
@@ -19,10 +23,18 @@
 <section id="home" class="screen active">
 <div class="home">
 <div class="card hero">
-<div class="label">Gemeinsam · jedes Handy · ein Raum</div>
-<h1>Würfeln.<br><span>Platzieren.</span><br>Gewinnen.</h1>
-<p>Ein Spieler eröffnet den Raum. Alle anderen treten mit dem fünfstelligen Code bei. Die aktuelle Würfelsumme erscheint gleichzeitig auf allen Handys.</p>
-<div class="steps"><div class="step"><b>1</b>Raum erstellen</div><div class="step"><b>2</b>Code teilen</div><div class="step"><b>3</b>Gemeinsam spielen</div></div>
+  <div class="hero-copy">
+    <div class="label">Das Würfelspiel · jetzt gemeinsam online</div>
+    <h1>Euer Spiel.<br><span>Eure Runde.</span><br>Überall.</h1>
+    <p>Knister verbindet eure Handys zu einem gemeinsamen Spieltisch – ohne Anmeldung, ohne Kosten und sofort startklar.</p>
+    <div class="steps"><div class="step"><b>1</b>Raum erstellen</div><div class="step"><b>2</b>Code teilen</div><div class="step"><b>3</b>Losknistern</div></div>
+  </div>
+  <div class="hero-showcase" aria-hidden="true">
+    <div class="icon-glow"></div>
+    <img src="icons/knister-premium-512.png?v=3" alt="">
+    <span class="showcase-chip chip-live"><i></i> Live verbunden</span>
+    <span class="showcase-chip chip-free">Kostenlos</span>
+  </div>
 </div>
 <div class="card joinbox">
 <label class="label" for="nameInput">Dein Name</label>
@@ -33,6 +45,7 @@
 <label class="label" for="codeInput">Raumcode</label>
 <input id="codeInput" class="field code" maxlength="5" placeholder="ABCDE" autocapitalize="characters">
 <button id="joinBtn" class="btn soft">Raum beitreten</button>
+<button id="installBtn" class="btn install-btn hide"><span>↓</span> Knister installieren</button>
 </div>
 <div class="mini">Keine Anmeldung. Die Spielverbindung läuft direkt zwischen euren Browsern.</div>
 </div>
@@ -129,6 +142,6 @@
 <div class="foot">Knister Online · inoffizieller digitaler Spielblock · Verbindung via WebRTC</div>
 </div>
 
-<script src="app.js?v=20260920-undo7"></script>
+<script src="app.js?v=20260920-premium8"></script>
 </body>
 </html>
