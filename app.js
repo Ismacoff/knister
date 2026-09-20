@@ -101,18 +101,50 @@ function thud(at=0,volume=.16,pitch=95){
 function diceSound(){
  audioReady();if(!audioCtx)return;thud(.05,.08,150);thud(.23,.10,125);thud(.43,.12,108);thud(.68,.14,92);thud(.96,.16,78);thud(1.18,.22,65);
 }
-function setDie(el,value){if(!el)return;value=Math.max(1,Math.min(6,Number(value)||1));el.dataset.value=String(value);el.setAttribute('aria-label','Würfel zeigt '+value)}
-function orientCube(el,value){if(!el)return;const m={1:'rotateX(-8deg) rotateY(10deg)',2:'rotateX(-98deg) rotateY(4deg)',3:'rotateX(-8deg) rotateY(-82deg)',4:'rotateX(-8deg) rotateY(98deg)',5:'rotateX(98deg) rotateY(3deg)',6:'rotateX(-8deg) rotateY(188deg)'};el.style.transform=m[value]||m[1]}
+function setDie(el,value){
+ if(!el)return;
+ value=Math.max(1,Math.min(6,Number(value)||1));
+ el.setAttribute('data-value',String(value));
+ el.setAttribute('aria-label','Würfel zeigt '+value);
+}
 function animateDice(a,b,commit=true){
- const d1=$('die1'),d2=$('die2'),r1=$('rollDie1'),r2=$('rollDie2'),overlay=$('boardDiceOverlay');if(!d1||!d2||!r1||!r2||!overlay)return;
- diceSound();overlay.classList.remove('show');void overlay.offsetWidth;overlay.classList.add('show');
- let ticks=0;const timer=setInterval(()=>{setDie(d1,1+Math.floor(Math.random()*6));setDie(d2,1+Math.floor(Math.random()*6));if(++ticks>=10)clearInterval(timer)},120);
- setTimeout(()=>{clearInterval(timer);setDie(d1,a);setDie(d2,b);orientCube(r1,a);orientCube(r2,b)},1320);
- setTimeout(()=>{overlay.classList.remove('show');if(commit){room.dice=[a,b];room.turn++;room.currentRoll=a+b;Object.values(room.players).forEach(p=>p.placed=false);myPlaced=false;isRolling=false;broadcast()}},1760);
+ const die1=$('die1'),die2=$('die2'),fly1=$('flyDie1'),fly2=$('flyDie2'),board=$('board'),overlay=$('diceOverlay');
+ if(!die1||!die2||!fly1||!fly2||!board||!overlay){isRolling=false;return}
+ diceSound();
+ setDie(die1,a);setDie(die2,b);setDie(fly1,a);setDie(fly2,b);
+ overlay.classList.remove('active');fly1.getAnimations().forEach(x=>x.cancel());fly2.getAnimations().forEach(x=>x.cancel());
+ void overlay.offsetWidth;overlay.classList.add('active');
+ const w=board.clientWidth,h=board.clientHeight,size=Math.min(68,Math.max(54,w*.16));
+ const path1=[
+  {transform:`translate(${-size*1.3}px,${-size*.65}px) rotate(-80deg) scale(.65)`,offset:0},
+  {transform:`translate(${w*.18}px,${h*.10}px) rotate(155deg) scale(1.08)`,offset:.25},
+  {transform:`translate(${w*.60}px,${h*.38}px) rotate(385deg) scale(.90)`,offset:.52},
+  {transform:`translate(${w*.34}px,${h*.19}px) rotate(505deg) scale(1.03)`,offset:.72},
+  {transform:`translate(${w*.39}px,${h*.43}px) rotate(620deg) scale(1)`,offset:1}
+ ];
+ const path2=[
+  {transform:`translate(${w+size*.25}px,${-size*.8}px) rotate(95deg) scale(.62)`,offset:0},
+  {transform:`translate(${w*.68}px,${h*.12}px) rotate(-145deg) scale(1.07)`,offset:.24},
+  {transform:`translate(${w*.22}px,${h*.45}px) rotate(-390deg) scale(.91)`,offset:.53},
+  {transform:`translate(${w*.55}px,${h*.24}px) rotate(-510deg) scale(1.04)`,offset:.73},
+  {transform:`translate(${w*.56}px,${h*.48}px) rotate(-635deg) scale(1)`,offset:1}
+ ];
+ const opts={duration:1650,easing:'cubic-bezier(.16,.72,.18,1)',fill:'forwards'};
+ fly1.animate(path1,opts);fly2.animate(path2,opts);
+ let ticks=0;const timer=setInterval(()=>{if(++ticks<10){setDie(die1,1+Math.floor(Math.random()*6));setDie(die2,1+Math.floor(Math.random()*6))}},110);
+ setTimeout(()=>{clearInterval(timer);setDie(die1,a);setDie(die2,b)},1320);
+ setTimeout(()=>{
+  overlay.classList.remove('active');
+  if(commit){room.dice=[a,b];room.turn++;room.currentRoll=a+b;Object.values(room.players).forEach(p=>p.placed=false);myPlaced=false;isRolling=false;broadcast()}
+ },1700);
 }
 function rollDice(){
- if(role!=='host'||room.turn>=25||isRolling)return;const ps=playerSummary(),all=ps.length>0&&ps.every(p=>p.placed);if(room.currentRoll!==null&&!all)return;
- isRolling=true;renderFromRoom();const a=1+Math.floor(Math.random()*6),b=1+Math.floor(Math.random()*6);animateDice(a,b,true)
+ if(role!=='host'||room.turn>=25||isRolling)return;
+ const ps=playerSummary(),all=ps.length>0&&ps.every(p=>p.placed);
+ if(room.currentRoll!==null&&!all)return;
+ isRolling=true;renderFromRoom();
+ const a=1+Math.floor(Math.random()*6),b=1+Math.floor(Math.random()*6);
+ animateDice(a,b,true);
 }
 function place(i){
  if(room.phase!=='game'||myPlaced||room.currentRoll==null||myBoard[i]!=null)return;myBoard[i]=room.currentRoll;myPlaced=true;
