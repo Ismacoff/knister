@@ -72,9 +72,13 @@
 <div id="winnerBox" class="winner hide"></div>
 <div class="turnbox">
 <div class="label">Aktueller Wurf</div>
-<div id="diceStage" class="dice-stage" aria-label="Zwei Würfel">
-  <div id="die1" class="die" data-value="1" aria-label="Würfel 1"></div>
-  <div id="die2" class="die" data-value="1" aria-label="Würfel 2"></div>
+<div id="diceStage" class="dice-stage" aria-label="Zwei dreidimensionale Würfel">
+  <div class="die-wrap die-wrap-a"><div id="die1" class="die3d v1" aria-label="Würfel 1">
+    <span class="face front">⚀</span><span class="face back">⚅</span><span class="face right">⚂</span><span class="face left">⚃</span><span class="face top">⚁</span><span class="face bottom">⚄</span>
+  </div><span class="dice-shadow"></span></div>
+  <div class="die-wrap die-wrap-b"><div id="die2" class="die3d v1" aria-label="Würfel 2">
+    <span class="face front">⚀</span><span class="face back">⚅</span><span class="face right">⚂</span><span class="face left">⚃</span><span class="face top">⚁</span><span class="face bottom">⚄</span>
+  </div><span class="dice-shadow"></span></div>
 </div>
 <div class="sumline"><span>Summe</span><div id="currentRoll" class="big">–</div></div>
 <div id="turnHint" class="mini">Der Spielleiter würfelt zuerst.</div>
