@@ -252,3 +252,18 @@ if($('installBtn'))$('installBtn').addEventListener('click',async()=>{
  deferredInstallPrompt=null;$('installBtn').classList.add('hide');
 });
 window.addEventListener('appinstalled',()=>{deferredInstallPrompt=null;if($('installBtn'))$('installBtn').classList.add('hide')});
+
+const allowedThemes=['classic','space','nature'];
+function applyTheme(theme){
+ if(!allowedThemes.includes(theme))theme='classic';
+ document.body.dataset.theme=theme;localStorage.setItem('knister-theme',theme);
+ document.querySelectorAll('[data-theme-choice]').forEach(btn=>btn.classList.toggle('selected',btn.dataset.themeChoice===theme));
+}
+function openThemeSettings(){$('themeModal').classList.remove('hide');document.body.classList.add('modal-open')}
+function closeThemeSettings(){$('themeModal').classList.add('hide');document.body.classList.remove('modal-open')}
+$('settingsBtn').addEventListener('click',openThemeSettings);
+$('closeThemeBtn').addEventListener('click',closeThemeSettings);
+$('themeModal').addEventListener('click',event=>{if(event.target===$('themeModal'))closeThemeSettings()});
+document.querySelectorAll('[data-theme-choice]').forEach(btn=>btn.addEventListener('click',()=>{applyTheme(btn.dataset.themeChoice);setTimeout(closeThemeSettings,180)}));
+document.addEventListener('keydown',event=>{if(event.key==='Escape')closeThemeSettings()});
+applyTheme(localStorage.getItem('knister-theme')||'classic');
