@@ -193,3 +193,4 @@ $('board').addEventListener('click',e=>{const b=e.target.closest('[data-cell]');
 $('diceBtn').addEventListener('click',()=>{audioReady();rollDice()});$('hostBtn').addEventListener('pointerdown',audioReady,{once:true});$('joinBtn').addEventListener('pointerdown',audioReady,{once:true});
 const saved=localStorage.getItem('knister-name');if(saved)$('nameInput').value=saved;
 window.addEventListener('beforeunload',()=>{try{if(peer)peer.destroy()}catch(e){}});
+if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));}
