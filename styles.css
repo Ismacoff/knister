@@ -188,3 +188,14 @@ button,input{font:inherit}button{cursor:pointer;touch-action:manipulation}.app{m
  .chip-live{left:5%;top:25%}.chip-free{right:5%;bottom:18%}
  .joinbox{padding:21px 19px}
 }
+
+/* Wechselnder Würfler */
+.compact-turn{position:relative;flex-wrap:wrap}
+.roller-status{width:100%;display:flex;align-items:center;gap:7px;padding:6px 9px;border-radius:10px;background:rgba(255,255,255,.58);border:1px solid rgba(93,130,119,.18);color:#536966}
+.roller-status span{width:8px;height:8px;border-radius:50%;background:#9caaa7;box-shadow:0 0 0 4px rgba(156,170,167,.12)}
+.roller-status b{font-size:.69rem;line-height:1.1}
+.roller-status.mine{background:linear-gradient(135deg,rgba(255,238,194,.92),rgba(255,255,255,.72));border-color:rgba(211,111,85,.27);color:#a74132}
+.roller-status.mine span{background:#d36f55;box-shadow:0 0 0 4px rgba(211,111,85,.13)}
+@media(max-width:760px){
+ .roller-status{padding:5px 7px;gap:5px}.roller-status b{font-size:.6rem}.roller-status span{width:6px;height:6px}
+}
