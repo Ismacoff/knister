@@ -89,13 +89,25 @@ function renderFromRoom(){
  $('hostHint').textContent=room.currentRoll!==null&&!all?'Noch '+(ps.length-ready)+' Spieler müssen platzieren.':'Alle bereit für den nächsten Wurf.';
  renderBoard();
 }
-function setDie(el,value){if(!el)return;value=Math.max(1,Math.min(6,Number(value)||1));el.dataset.value=String(value);el.innerHTML=value===6?'<span></span>':'';el.setAttribute('aria-label','Würfel zeigt '+value)}
+let audioCtx=null;
+function audioReady(){
+ try{if(!audioCtx)audioCtx=new (window.AudioContext||window.webkitAudioContext)();if(audioCtx.state==='suspended')audioCtx.resume()}catch(e){}
+}
+function thud(at=0,volume=.16,pitch=95){
+ if(!audioCtx)return;const t=audioCtx.currentTime+at;
+ const osc=audioCtx.createOscillator(),gain=audioCtx.createGain();osc.type='triangle';osc.frequency.setValueAtTime(pitch,t);osc.frequency.exponentialRampToValueAtTime(42,t+.09);gain.gain.setValueAtTime(volume,t);gain.gain.exponentialRampToValueAtTime(.001,t+.11);osc.connect(gain).connect(audioCtx.destination);osc.start(t);osc.stop(t+.12);
+ const len=Math.floor(audioCtx.sampleRate*.045),buf=audioCtx.createBuffer(1,len,audioCtx.sampleRate),data=buf.getChannelData(0);for(let i=0;i<len;i++)data[i]=(Math.random()*2-1)*(1-i/len);const src=audioCtx.createBufferSource(),ng=audioCtx.createGain();src.buffer=buf;ng.gain.setValueAtTime(volume*.45,t);ng.gain.exponentialRampToValueAtTime(.001,t+.05);src.connect(ng).connect(audioCtx.destination);src.start(t);
+}
+function diceSound(){
+ audioReady();if(!audioCtx)return;thud(.05,.08,150);thud(.23,.10,125);thud(.43,.12,108);thud(.68,.14,92);thud(.96,.16,78);thud(1.18,.22,65);
+}
+function setDie(el,value){if(!el)return;value=Math.max(1,Math.min(6,Number(value)||1));el.classList.remove('v1','v2','v3','v4','v5','v6');el.classList.add('v'+value);el.dataset.value=String(value);el.setAttribute('aria-label','Würfel zeigt '+value)}
 function animateDice(a,b,commit=true){
- const d1=$('die1'),d2=$('die2');if(!d1||!d2)return;
- d1.classList.remove('rolling');d2.classList.remove('rolling');void d1.offsetWidth;
- d1.classList.add('rolling');d2.classList.add('rolling');
- let ticks=0;const timer=setInterval(()=>{setDie(d1,1+Math.floor(Math.random()*6));setDie(d2,1+Math.floor(Math.random()*6));if(++ticks>=8){clearInterval(timer)}},85);
- setTimeout(()=>{clearInterval(timer);setDie(d1,a);setDie(d2,b);d1.classList.remove('rolling');d2.classList.remove('rolling');if(commit){room.dice=[a,b];room.turn++;room.currentRoll=a+b;Object.values(room.players).forEach(p=>p.placed=false);myPlaced=false;isRolling=false;broadcast()}},960);
+ const d1=$('die1'),d2=$('die2'),w1=d1?.parentElement,w2=d2?.parentElement,stage=$('diceStage');if(!d1||!d2||!w1||!w2)return;
+ diceSound();w1.classList.remove('rolling');w2.classList.remove('rolling');stage?.classList.remove('impact');void w1.offsetWidth;w1.classList.add('rolling');w2.classList.add('rolling');
+ let ticks=0;const timer=setInterval(()=>{setDie(d1,1+Math.floor(Math.random()*6));setDie(d2,1+Math.floor(Math.random()*6));if(++ticks>=10)clearInterval(timer)},105);
+ setTimeout(()=>{clearInterval(timer);setDie(d1,a);setDie(d2,b)},1180);
+ setTimeout(()=>{w1.classList.remove('rolling');w2.classList.remove('rolling');stage?.classList.add('impact');setTimeout(()=>stage?.classList.remove('impact'),300);if(commit){room.dice=[a,b];room.turn++;room.currentRoll=a+b;Object.values(room.players).forEach(p=>p.placed=false);myPlaced=false;isRolling=false;broadcast()}},1460);
 }
 function rollDice(){
  if(role!=='host'||room.turn>=25||isRolling)return;const ps=playerSummary(),all=ps.length>0&&ps.every(p=>p.placed);if(room.currentRoll!==null&&!all)return;
@@ -119,6 +131,6 @@ $('hostBtn').addEventListener('click',createHost);$('joinBtn').addEventListener(
 $('leaveBtn').addEventListener('click',()=>{destroyPeer();show('home')});$('exitGameBtn').addEventListener('click',()=>{destroyPeer();show('home')});$('newGameBtn').addEventListener('click',newRound);
 $('codeInput').addEventListener('input',e=>e.target.value=e.target.value.toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,5));
 $('board').addEventListener('click',e=>{const b=e.target.closest('[data-cell]');if(b)place(Number(b.dataset.cell))});
-$('diceBtn').addEventListener('click',rollDice);setDie($('die1'),1);setDie($('die2'),1);
+$('diceBtn').addEventListener('click',()=>{audioReady();rollDice()});$('hostBtn').addEventListener('pointerdown',audioReady,{once:true});$('joinBtn').addEventListener('pointerdown',audioReady,{once:true});setDie($('die1'),1);setDie($('die2'),1);
 const saved=localStorage.getItem('knister-name');if(saved)$('nameInput').value=saved;
 window.addEventListener('beforeunload',()=>{try{if(peer)peer.destroy()}catch(e){}});
