@@ -18,13 +18,13 @@
       "purpose": "any"
     },
     {
-      "src": "/knister/icons/knister-premium-512.png",
+      "src": "/knister/icons/knister-premium-v2-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/knister/icons/knister-premium-512.png",
+      "src": "/knister/icons/knister-premium-v2-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"
