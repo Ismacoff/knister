@@ -283,3 +283,19 @@ body[data-theme="nature"] #game .dice-btn{background:linear-gradient(145deg,#789
 html,body,button,input,summary{font-family:"Knister Sans",Arial,sans-serif}
 .hero h1 span,.welcome-copy p{font-style:normal!important;font-weight:700!important;letter-spacing:-.035em}
 .cell,.turnbox .big,.standing .score,.winner b,.scorebox b,.row-scores b,.column-scores b,.diagonal-scores b,.rules-grid b,.rules-icon{font-family:"Knister Sans",Arial,sans-serif!important;font-style:normal!important}
+
+
+/* iPad grid stability and device-independent settings icon */
+.grid{grid-template-columns:repeat(5,minmax(0,1fr))}
+.cell{min-width:0;width:100%;max-width:100%;overflow:hidden}
+.board-card,.board-layout{min-width:0}
+.settings-btn{
+  appearance:none;-webkit-appearance:none;
+  border-color:rgba(99,126,121,.2);
+  background:linear-gradient(145deg,rgba(255,255,255,.98),rgba(237,244,241,.94));
+  color:#365653;
+  box-shadow:0 5px 14px rgba(44,70,66,.09),inset 0 1px 0 rgba(255,255,255,.9);
+}
+.settings-btn svg{display:block;width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round}
+.settings-btn:hover{border-color:rgba(99,126,121,.38);box-shadow:0 6px 16px rgba(44,70,66,.13),inset 0 1px 0 rgba(255,255,255,.95)}
+.settings-btn:focus-visible{outline:3px solid rgba(201,31,60,.2);outline-offset:2px}
