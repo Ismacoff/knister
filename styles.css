@@ -145,3 +145,14 @@ button,input{font:inherit}button{cursor:pointer;touch-action:manipulation}.app{m
  .steps{grid-template-columns:repeat(3,1fr);gap:6px;margin-top:18px}.step{min-height:74px;padding:10px 7px 8px;font-size:.65rem;border-radius:13px}.step b{width:23px;height:23px;margin-bottom:6px;border-radius:7px;font-size:.76rem}
  .joinbox{padding:21px 19px}.brand i{font-size:.5em}.roomcode strong{font-size:1.45rem;letter-spacing:.15em}
 }
+
+/* Rückgängig-Steuerung */
+.roll-actions{display:flex;flex-direction:column;gap:6px;min-width:0}
+.roll-actions .hostroll{width:100%}
+.undo-btn{min-height:39px;padding:7px 11px;display:flex;align-items:center;justify-content:center;gap:7px;background:linear-gradient(145deg,#fff,#eef3f0);border-color:#cbd8d3;color:#405654;font-size:.75rem;box-shadow:0 4px 10px rgba(45,69,66,.07)}
+.undo-btn>span:first-child{font-size:1.15rem;line-height:1;color:#c95f4b;font-weight:900}
+.undo-btn:not(:disabled):active{transform:translateY(1px)}
+.undo-btn:disabled{opacity:.38}
+@media(max-width:760px){
+ .roll-actions{gap:4px}.undo-btn{min-height:34px;padding:5px 7px;font-size:.66rem;border-radius:11px}.undo-btn>span:first-child{font-size:1rem}
+}
