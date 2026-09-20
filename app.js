@@ -77,7 +77,14 @@ function renderBoard(){
  $('progress').style.width=(myBoard.filter(v=>v!==null).length*4)+'%';
  $('board').innerHTML=myBoard.map((v,i)=>`<button class="cell ${(Math.floor(i/5)===i%5||Math.floor(i/5)+i%5===4)?'diag':''} ${v===null&&room.currentRoll!==null&&!myPlaced?'ready':''}" data-cell="${i}" ${v!==null||room.currentRoll===null||myPlaced||room.phase!=='game'?'disabled':''}>${v==null?'·':v}</button>`).join('');
  const rowValues=Array.from({length:5},(_,r)=>scoreLine(myBoard.slice(r*5,r*5+5)));
+ const columnValues=Array.from({length:5},(_,c)=>scoreLine(Array.from({length:5},(_,r)=>myBoard[r*5+c])));
+ const diagonalValues=[
+  scoreLine([0,6,12,18,24].map(i=>myBoard[i]))*2,
+  scoreLine([4,8,12,16,20].map(i=>myBoard[i]))*2
+ ];
  $('rowScores').innerHTML=rowValues.map((v,r)=>`<div title="Reihe ${r+1}: ${v} Punkte"><small>R${r+1}</small><b>${v}</b></div>`).join('');
+ $('columnScores').innerHTML=columnValues.map((v,c)=>`<div title="Spalte ${c+1}: ${v} Punkte"><small>S${c+1}</small><b>${v}</b></div>`).join('');
+ $('diagonalScores').innerHTML=diagonalValues.map((v,d)=>`<div title="Diagonale ${d+1}: ${v} Punkte, doppelt gewertet"><small>${d===0?'↘':'↙'} ×2</small><b>${v}</b></div>`).join('');
 }
 function renderFromRoom(){
  if(room.phase==='lobby'){renderLobby();return}
