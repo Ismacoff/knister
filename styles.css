@@ -12,7 +12,7 @@ button,input{font:inherit}button{cursor:pointer;touch-action:manipulation}.app{m
 .die[data-value="3"]{background-image:radial-gradient(circle at 50% 50%,#263b3d 0 6px,transparent 7px),linear-gradient(145deg,#fff,#f1f3f0)}
 .die[data-value="4"]{background-image:radial-gradient(circle at 73% 27%,#263b3d 0 6px,transparent 7px),radial-gradient(circle at 27% 73%,#263b3d 0 6px,transparent 7px),linear-gradient(145deg,#fff,#f1f3f0)}
 .die[data-value="5"]{background-image:radial-gradient(circle at 50% 50%,#263b3d 0 6px,transparent 7px),radial-gradient(circle at 73% 27%,#263b3d 0 6px,transparent 7px),radial-gradient(circle at 27% 73%,#263b3d 0 6px,transparent 7px),linear-gradient(145deg,#fff,#f1f3f0)}
-.die[data-value="6"]{background-image:radial-gradient(circle at 27% 50%,#263b3d 0 6px,transparent 7px),radial-gradient(circle at 73% 50%,#263b3d 0 6px,transparent 7px),linear-gradient(145deg,#fff,#f1f3f0)}
+.die[data-value="6"]{background-image:radial-gradient(circle at 73% 27%,#263b3d 0 6px,transparent 7px),radial-gradient(circle at 27% 73%,#263b3d 0 6px,transparent 7px),radial-gradient(circle at 27% 50%,#263b3d 0 6px,transparent 7px),radial-gradient(circle at 73% 50%,#263b3d 0 6px,transparent 7px),linear-gradient(145deg,#fff,#f1f3f0)}
 .die[data-value="3"]::before,.die[data-value="4"]::before,.die[data-value="5"]::before,.die[data-value="6"]::before{left:13px;top:13px}
 .die[data-value="3"]::after,.die[data-value="4"]::after,.die[data-value="5"]::after,.die[data-value="6"]::after{right:13px;bottom:13px}
 .die[data-value="6"] span{display:block}.die[data-value="6"] span::before,.die[data-value="6"] span::after{content:"";position:absolute;width:13px;height:13px;border-radius:50%;background:#263b3d}
