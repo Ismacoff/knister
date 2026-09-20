@@ -101,13 +101,14 @@ function thud(at=0,volume=.16,pitch=95){
 function diceSound(){
  audioReady();if(!audioCtx)return;thud(.05,.08,150);thud(.23,.10,125);thud(.43,.12,108);thud(.68,.14,92);thud(.96,.16,78);thud(1.18,.22,65);
 }
-function setDie(el,value){if(!el)return;value=Math.max(1,Math.min(6,Number(value)||1));el.classList.remove('v1','v2','v3','v4','v5','v6');el.classList.add('v'+value);el.dataset.value=String(value);el.setAttribute('aria-label','Würfel zeigt '+value)}
+function setDie(el,value){if(!el)return;value=Math.max(1,Math.min(6,Number(value)||1));el.dataset.value=String(value);el.setAttribute('aria-label','Würfel zeigt '+value)}
+function orientCube(el,value){if(!el)return;const m={1:'rotateX(-8deg) rotateY(10deg)',2:'rotateX(-98deg) rotateY(4deg)',3:'rotateX(-8deg) rotateY(-82deg)',4:'rotateX(-8deg) rotateY(98deg)',5:'rotateX(98deg) rotateY(3deg)',6:'rotateX(-8deg) rotateY(188deg)'};el.style.transform=m[value]||m[1]}
 function animateDice(a,b,commit=true){
- const d1=$('die1'),d2=$('die2'),w1=d1?.parentElement,w2=d2?.parentElement,stage=$('diceStage');if(!d1||!d2||!w1||!w2)return;
- diceSound();w1.classList.remove('rolling');w2.classList.remove('rolling');stage?.classList.remove('impact');void w1.offsetWidth;w1.classList.add('rolling');w2.classList.add('rolling');
- let ticks=0;const timer=setInterval(()=>{setDie(d1,1+Math.floor(Math.random()*6));setDie(d2,1+Math.floor(Math.random()*6));if(++ticks>=10)clearInterval(timer)},105);
- setTimeout(()=>{clearInterval(timer);setDie(d1,a);setDie(d2,b)},1180);
- setTimeout(()=>{w1.classList.remove('rolling');w2.classList.remove('rolling');stage?.classList.add('impact');setTimeout(()=>stage?.classList.remove('impact'),300);if(commit){room.dice=[a,b];room.turn++;room.currentRoll=a+b;Object.values(room.players).forEach(p=>p.placed=false);myPlaced=false;isRolling=false;broadcast()}},1460);
+ const d1=$('die1'),d2=$('die2'),r1=$('rollDie1'),r2=$('rollDie2'),overlay=$('boardDiceOverlay');if(!d1||!d2||!r1||!r2||!overlay)return;
+ diceSound();overlay.classList.remove('show');void overlay.offsetWidth;overlay.classList.add('show');
+ let ticks=0;const timer=setInterval(()=>{setDie(d1,1+Math.floor(Math.random()*6));setDie(d2,1+Math.floor(Math.random()*6));if(++ticks>=10)clearInterval(timer)},120);
+ setTimeout(()=>{clearInterval(timer);setDie(d1,a);setDie(d2,b);orientCube(r1,a);orientCube(r2,b)},1320);
+ setTimeout(()=>{overlay.classList.remove('show');if(commit){room.dice=[a,b];room.turn++;room.currentRoll=a+b;Object.values(room.players).forEach(p=>p.placed=false);myPlaced=false;isRolling=false;broadcast()}},1760);
 }
 function rollDice(){
  if(role!=='host'||room.turn>=25||isRolling)return;const ps=playerSummary(),all=ps.length>0&&ps.every(p=>p.placed);if(room.currentRoll!==null&&!all)return;
