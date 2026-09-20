@@ -43,3 +43,32 @@ button,input{font:inherit}button{cursor:pointer;touch-action:manipulation}.app{m
  .fly-die .pip{width:9px;height:9px}.fly-die .pip.tl{left:14px;top:14px}.fly-die .pip.tr{right:14px;top:14px}.fly-die .pip.ml{left:14px}.fly-die .pip.mr{right:14px}.fly-die .pip.bl{left:14px;bottom:14px}.fly-die .pip.br{right:14px;bottom:14px}
  .turnbox .big{font-size:3.5rem}
 }
+
+/* Kompakte Wurfsteuerung direkt am Spielfeld */
+.roll-panel{display:grid;grid-template-columns:minmax(0,.82fr) minmax(180px,1.18fr);gap:10px;align-items:stretch;margin:0 0 12px}
+.roll-panel .turnbox{margin:0;padding:10px 12px;border-radius:15px;display:flex;align-items:center;gap:9px;text-align:left}
+.roll-panel .turnbox .label{margin:0;white-space:nowrap}
+.roll-panel .sumline{padding:0;gap:6px}.roll-panel .sumline>span{display:none}
+.roll-panel .turnbox .big{font-size:2.35rem;line-height:.85}
+.roll-panel .turnbox .mini{margin:0;font-size:.72rem;line-height:1.25}
+.roll-panel .hostroll{margin:0;padding:0;border:0;display:flex;flex-direction:column;justify-content:center}
+.roll-panel .hostroll.hide{display:none!important}
+.roll-panel .dice-btn{min-height:48px}
+.roll-panel .hostroll .mini{margin:4px 3px 0;font-size:.7rem;line-height:1.2}
+.board-layout{display:grid;grid-template-columns:minmax(0,1fr) 42px;gap:7px;align-items:stretch}
+.row-scores{display:grid;grid-template-rows:repeat(5,1fr);gap:8px}
+.row-scores>div{min-height:0;border:1px solid #d2ddd8;border-radius:11px;background:linear-gradient(145deg,#f8faf8,#edf3f0);display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--ink);box-shadow:0 2px 0 #d5ddd9}
+.row-scores small{font-size:.52rem;color:var(--muted);font-weight:800;line-height:1}.row-scores b{font-family:"Segoe Print","Comic Sans MS",cursive;font-size:1.05rem;line-height:1.15}
+@media(max-width:760px){
+ .status-card{order:0}
+ .board-card{order:-1}
+ .roll-panel{grid-template-columns:minmax(0,.8fr) minmax(150px,1.2fr);gap:7px;margin-bottom:9px}
+ .roll-panel .turnbox{padding:8px 9px;gap:6px}
+ .roll-panel .turnbox .label{font-size:.58rem;letter-spacing:.8px}
+ .roll-panel .turnbox .big{font-size:2rem}
+ .roll-panel .turnbox .mini{display:none}
+ .roll-panel .hostroll .mini{display:none}
+ .roll-panel .dice-btn{min-height:43px;padding:8px 10px}
+ .board-layout{grid-template-columns:minmax(0,1fr) 35px;gap:5px}
+ .row-scores{gap:6px}.row-scores>div{border-radius:9px}.row-scores small{font-size:.46rem}.row-scores b{font-size:.9rem}
+}
