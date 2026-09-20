@@ -3,7 +3,7 @@ const $=id=>document.getElementById(id);
 const screens=['home','lobby','game'];
 let peer=null, hostConn=null, role=null, roomCode='', myName='', myPeerId='', phase='home';
 let conns=new Map();
-let room={phase:'lobby',turn:0,currentRoll:null,dice:[1,1],players:{}};
+let room={phase:'lobby',turn:0,currentRoll:null,dice:[1,1],players:{},rollerId:null,lastAdvancedTurn:0};
 let isRolling=false;
 let myBoard=Array(25).fill(null), myPlaced=false, lastPlacedIndex=null;
 const lines=[[0,1,2,3,4],[5,6,7,8,9],[10,11,12,13,14],[15,16,17,18,19],[20,21,22,23,24],[0,5,10,15,20],[1,6,11,16,21],[2,7,12,17,22],[3,8,13,18,23],[4,9,14,19,24],[0,6,12,18,24],[20,16,12,8,4]];
@@ -15,12 +15,22 @@ function msg(where,text,bad=false){const e=$(where);e.textContent=text;e.classNa
 function hideMsg(where){$(where).classList.add('hide')}
 function scoreLine(vals){if(vals.some(v=>v==null))return 0;const f={};vals.forEach(v=>f[v]=(f[v]||0)+1);const c=Object.values(f).sort((a,b)=>b-a),u=[...new Set(vals)].sort((a,b)=>a-b);if(c[0]===5)return 10;if(c[0]===4)return 6;if(c[0]===3&&c[1]===2)return 8;if(c[0]===3)return 3;if(c[0]===2&&c[1]===2)return 3;if(c[0]===2)return 1;if(u.length===5&&u[4]-u[0]===4)return u.includes(7)?8:12;return 0}
 function score(board){const x=lines.map((a,i)=>scoreLine(a.map(k=>board[k]))*(i>=10?2:1));return{rows:x.slice(0,5).reduce((a,b)=>a+b,0),cols:x.slice(5,10).reduce((a,b)=>a+b,0),diag:x.slice(10).reduce((a,b)=>a+b,0),total:x.reduce((a,b)=>a+b,0)}}
+function rollOrder(){return Object.values(room.players)}
+function ensureRoller(){const order=rollOrder();if(!order.length){room.rollerId=null;return}if(!order.some(p=>p.id===room.rollerId))room.rollerId=order[0].id}
+function advanceRoller(){
+ const order=rollOrder();if(!order.length){room.rollerId=null;return}
+ const i=Math.max(0,order.findIndex(p=>p.id===room.rollerId));room.rollerId=order[(i+1)%order.length].id
+}
+function maybeAdvanceRoller(){
+ const players=rollOrder(),all=players.length>0&&players.every(p=>p.placed);
+ if(room.phase==='game'&&room.turn>0&&all&&room.lastAdvancedTurn<room.turn){advanceRoller();room.lastAdvancedTurn=room.turn}
+}
 function playerSummary(){return Object.values(room.players).map(p=>({id:p.id,name:p.name,score:p.score||0,filled:p.filled||0,placed:!!p.placed,host:!!p.host})).sort((a,b)=>b.score-a.score||a.name.localeCompare(b.name))}
-function hostPayload(){return{type:'state',phase:room.phase,turn:room.turn,currentRoll:room.currentRoll,dice:room.dice,players:playerSummary()}}
+function hostPayload(){return{type:'state',phase:room.phase,turn:room.turn,currentRoll:room.currentRoll,dice:room.dice,rollerId:room.rollerId,players:playerSummary()}}
 function broadcast(){if(role==='host'&&room.phase==='game'&&room.turn>=25&&Object.values(room.players).length&&Object.values(room.players).every(p=>p.placed)){room.phase='finished';room.currentRoll=null}const p=hostPayload();conns.forEach(c=>{if(c.open)try{c.send(p)}catch(e){}});renderFromRoom()}
 function setupConn(conn){
  conn.on('data',data=>handleHostData(conn,data));
- conn.on('close',()=>{conns.delete(conn.peer);if(room.players[conn.peer]){delete room.players[conn.peer];broadcast()}});
+ conn.on('close',()=>{conns.delete(conn.peer);if(room.players[conn.peer]){delete room.players[conn.peer];ensureRoller();broadcast()}});
  conn.on('error',()=>{});
 }
 function handleHostData(conn,d){
@@ -32,10 +42,11 @@ function handleHostData(conn,d){
    conns.set(conn.peer,conn);conn.send(hostPayload());broadcast();return;
  }
  const p=room.players[conn.peer]; if(!p)return;
+ if(d.type==='roll'&&d.turn===room.turn&&canRollNow(conn.peer)){beginHostRoll();return}
  if(d.type==='placed'&&room.phase==='game'&&d.turn===room.turn&&!p.placed&&Array.isArray(d.board)&&d.board.length===25){
    const valid=d.board.every(v=>v===null||(Number.isInteger(v)&&v>=2&&v<=12));if(!valid)return;
    const filled=d.board.filter(v=>v!==null).length;if(filled!==room.turn)return;
-   const sc=score(d.board);p.score=sc.total;p.filled=filled;p.placed=true;broadcast();return;
+   const sc=score(d.board);p.score=sc.total;p.filled=filled;p.placed=true;maybeAdvanceRoller();broadcast();return;
  }
  if(d.type==='undo'&&room.phase==='game'&&!isRolling&&d.turn===room.turn&&p.placed&&Array.isArray(d.board)&&d.board.length===25){
    const valid=d.board.every(v=>v===null||(Number.isInteger(v)&&v>=2&&v<=12));if(!valid)return;
@@ -43,7 +54,7 @@ function handleHostData(conn,d){
    const sc=score(d.board);p.score=sc.total;p.filled=filled;p.placed=false;broadcast();
  }
 }
-function destroyPeer(){try{if(hostConn)hostConn.close()}catch(e){};try{conns.forEach(c=>c.close())}catch(e){};try{if(peer)peer.destroy()}catch(e){};peer=null;hostConn=null;conns.clear();role=null;roomCode='';myPeerId='';room={phase:'lobby',turn:0,currentRoll:null,dice:[1,1],players:{}};myBoard=Array(25).fill(null);myPlaced=false;lastPlacedIndex=null;setNet('Bereit',false)}
+function destroyPeer(){try{if(hostConn)hostConn.close()}catch(e){};try{conns.forEach(c=>c.close())}catch(e){};try{if(peer)peer.destroy()}catch(e){};peer=null;hostConn=null;conns.clear();role=null;roomCode='';myPeerId='';room={phase:'lobby',turn:0,currentRoll:null,dice:[1,1],players:{},rollerId:null,lastAdvancedTurn:0};myBoard=Array(25).fill(null);myPlaced=false;lastPlacedIndex=null;setNet('Bereit',false)}
 function getName(){const n=safeName($('nameInput').value);if(!n){$('nameInput').focus();return null}localStorage.setItem('knister-name',n);return n}
 function createHost(){
  myName=getName();if(!myName)return;destroyPeer();role='host';roomCode=randomCode();setNet('Verbinde …',false);hideMsg('lobbyMsg');
@@ -64,7 +75,7 @@ function joinRoom(){
 }
 function handleGuestData(d){
  if(!d||typeof d!=='object')return;if(d.type==='error'){msg('lobbyMsg',d.message||'Beitritt nicht möglich.',true);return}
- if(d.type==='state'){const prevTurn=room.turn;room.phase=d.phase;room.turn=d.turn;room.currentRoll=d.currentRoll;room.dice=Array.isArray(d.dice)?d.dice:[1,1];room.players={};(d.players||[]).forEach(p=>room.players[p.id]=p);if(d.turn>prevTurn&&d.currentRoll!=null){lastPlacedIndex=null;animateDice(room.dice[0],room.dice[1],false);}
+ if(d.type==='state'){const prevTurn=room.turn;room.phase=d.phase;room.turn=d.turn;room.currentRoll=d.currentRoll;room.dice=Array.isArray(d.dice)?d.dice:[1,1];room.rollerId=d.rollerId||null;room.players={};(d.players||[]).forEach(p=>room.players[p.id]=p);if(d.turn>prevTurn&&d.currentRoll!=null){lastPlacedIndex=null;animateDice(room.dice[0],room.dice[1],false);}
    if(room.phase==='game'&&phase!=='game'){myBoard=Array(25).fill(null);myPlaced=false;show('game')}
    const me=room.players[myPeerId];if(me)myPlaced=!!me.placed;renderFromRoom();
  }
@@ -75,7 +86,7 @@ function renderLobby(){
  $('lobbyPlayers').innerHTML=ps.map(p=>`<div class="player"><div class="avatar">${escapeHtml(p.name.slice(0,1).toUpperCase())}</div><div class="pinfo"><b>${escapeHtml(p.name)} ${p.id===myPeerId?'· du':''}</b><small>${p.host?'Spielleiter':'bereit'}</small></div></div>`).join('')||'<div class="mini">Noch niemand im Raum.</div>';
 }
 function startGame(){
- if(role!=='host')return;room.phase='game';room.turn=0;room.currentRoll=null;room.dice=[1,1];myBoard=Array(25).fill(null);myPlaced=false;lastPlacedIndex=null;Object.values(room.players).forEach(p=>{p.score=0;p.filled=0;p.placed=false});show('game');broadcast()
+ if(role!=='host')return;room.phase='game';room.turn=0;room.currentRoll=null;room.dice=[1,1];room.rollerId=rollOrder()[0]?.id||null;room.lastAdvancedTurn=0;myBoard=Array(25).fill(null);myPlaced=false;lastPlacedIndex=null;Object.values(room.players).forEach(p=>{p.score=0;p.filled=0;p.placed=false});show('game');broadcast()
 }
 function renderBoard(){
  const sc=score(myBoard);$('sRows').textContent=sc.rows;$('sCols').textContent=sc.cols;$('sDiag').textContent=sc.diag;$('sTotal').textContent=sc.total;
@@ -97,10 +108,13 @@ function renderFromRoom(){
  const ps=playerSummary(),ready=ps.filter(p=>p.placed).length,all=ps.length>0&&ready===ps.length;
  $('readyCount').textContent=room.currentRoll==null?'':ready+' / '+ps.length+' platziert';
  $('standings').innerHTML=ps.map((p,i)=>`<div class="standing"><span>${i+1}</span><div><b>${escapeHtml(p.name)}${p.id===myPeerId?' · du':''}</b><div class="${p.placed?'check':'wait'}">${room.currentRoll==null?'bereit':p.placed?'✓ platziert':'wartet …'}</div></div><span class="score">${p.score||0}</span></div>`).join('');
- $('hostControls').classList.toggle('hide',role!=='host'||room.turn>=25);if($('diceBtn'))$('diceBtn').disabled=role!=='host'||isRolling||(room.currentRoll!==null&&!all)||room.turn>=25;
+ const roller=Object.values(room.players).find(p=>p.id===room.rollerId),myTurn=room.rollerId===myPeerId;
+ if($('rollerStatus')){$('rollerStatus').classList.toggle('mine',myTurn);$('rollerStatus').querySelector('b').textContent=myTurn?'Du bist mit Würfeln dran':(roller?roller.name+' würfelt':'Würfler wird bestimmt …')}
+ $('hostControls').classList.toggle('hide',room.turn>=25||room.phase==='finished');
+ if($('diceBtn')){const canNow=myTurn&&!isRolling&&room.turn<25&&(room.currentRoll===null||all);$('diceBtn').disabled=!canNow;const txt=$('diceBtn').querySelector('span:last-child');if(txt)txt.textContent=myTurn?(canNow?'Würfel rollen':isRolling?'Würfel rollen …':'Warte auf alle'):(roller?roller.name+' würfelt':'Bitte warten')}
  if($('undoBtn'))$('undoBtn').disabled=!myPlaced||lastPlacedIndex==null||isRolling||room.phase!=='game';
  if(room.phase==='finished')finishGame();else{$('winnerBox').classList.add('hide');$('newGameBtn').classList.add('hide')}
- $('turnHint').textContent=room.phase==='finished'?'Runde beendet.':isRolling?'Die Würfel rollen …':room.currentRoll==null?(role==='host'?'Tippe auf „Würfeln“.':'Warte auf den ersten Wurf.'):(myPlaced?'Eingetragen – warte auf die anderen.':'Tippe ein freies Feld an.');
+ $('turnHint').textContent=room.phase==='finished'?'Runde beendet.':isRolling?'Die Würfel rollen …':room.currentRoll==null?(myTurn?'Du eröffnest die Runde.':'Warte auf '+(roller?.name||'den Würfler')+'.'):(myPlaced?'Eingetragen – warte auf die anderen.':'Tippe ein freies Feld an.');
  $('hostHint').textContent=room.currentRoll!==null&&!all?'Noch '+(ps.length-ready)+' Spieler müssen platzieren.':'Alle bereit für den nächsten Wurf.';
  renderBoard();
 }
@@ -139,6 +153,7 @@ function showSettledDice(){
  overlay.classList.add('active');
 }
 function animateDice(a,b,commit=true){
+ isRolling=true;
  const fly1=$('flyDie1'),fly2=$('flyDie2'),board=$('board'),overlay=$('diceOverlay');
  if(!fly1||!fly2||!board||!overlay){isRolling=false;return}
  diceSound();setDie(fly1,a);setDie(fly2,b);
@@ -174,18 +189,27 @@ function animateDice(a,b,commit=true){
   }
  },1700);
 }
-function rollDice(){
- if(role!=='host'||room.turn>=25||isRolling)return;
- const ps=playerSummary(),all=ps.length>0&&ps.every(p=>p.placed);
- if(room.currentRoll!==null&&!all)return;
+function canRollNow(playerId){
+ const ps=rollOrder(),all=ps.length>0&&ps.every(p=>p.placed);
+ return role==='host'&&room.phase==='game'&&playerId===room.rollerId&&room.turn<25&&!isRolling&&(room.currentRoll===null||all)
+}
+function beginHostRoll(){
+ if(role!=='host'||!canRollNow(room.rollerId))return;
  isRolling=true;renderFromRoom();
  const a=1+Math.floor(Math.random()*6),b=1+Math.floor(Math.random()*6);
  animateDice(a,b,true);
 }
+function rollDice(){
+ if(room.phase!=='game'||room.rollerId!==myPeerId||room.turn>=25||isRolling)return;
+ const ps=Object.values(room.players),all=ps.length>0&&ps.every(p=>p.placed);
+ if(room.currentRoll!==null&&!all)return;
+ if(role==='host')beginHostRoll();
+ else if(hostConn&&hostConn.open){$('diceBtn').disabled=true;hostConn.send({type:'roll',turn:room.turn})}
+}
 function place(i){
  if(room.phase!=='game'||myPlaced||room.currentRoll==null||myBoard[i]!=null)return;myBoard[i]=room.currentRoll;myPlaced=true;lastPlacedIndex=i;
  const sc=score(myBoard);
- if(role==='host'){const me=room.players[myPeerId];me.score=sc.total;me.filled=room.turn;me.placed=true;broadcast()}
+ if(role==='host'){const me=room.players[myPeerId];me.score=sc.total;me.filled=room.turn;me.placed=true;maybeAdvanceRoller();broadcast()}
  else if(hostConn&&hostConn.open){hostConn.send({type:'placed',turn:room.turn,board:myBoard})}
  renderBoard();renderFromRoom()
 }
@@ -205,7 +229,7 @@ function finishGame(){
  $('winnerBox').innerHTML=`<div class="label">Runde beendet</div><b>${escapeHtml(w.map(x=>x.name).join(' & '))}</b><div>${top} Punkte</div>`;$('winnerBox').classList.remove('hide');$('newGameBtn').classList.toggle('hide',role!=='host');$('hostControls').classList.add('hide');
  if(role==='host'&&room.phase!=='finished'){room.phase='finished';broadcast()}
 }
-function newRound(){if(role!=='host')return;$('winnerBox').classList.add('hide');$('newGameBtn').classList.add('hide');room.phase='game';room.turn=0;room.currentRoll=null;room.dice=[1,1];myBoard=Array(25).fill(null);myPlaced=false;lastPlacedIndex=null;Object.values(room.players).forEach(p=>{p.score=0;p.filled=0;p.placed=false});broadcast()}
+function newRound(){if(role!=='host')return;$('winnerBox').classList.add('hide');$('newGameBtn').classList.add('hide');room.phase='game';room.turn=0;room.currentRoll=null;room.dice=[1,1];room.rollerId=rollOrder()[0]?.id||null;room.lastAdvancedTurn=0;myBoard=Array(25).fill(null);myPlaced=false;lastPlacedIndex=null;Object.values(room.players).forEach(p=>{p.score=0;p.filled=0;p.placed=false});broadcast()}
 function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 $('hostBtn').addEventListener('click',createHost);$('joinBtn').addEventListener('click',joinRoom);$('startBtn').addEventListener('click',startGame);
 $('leaveBtn').addEventListener('click',()=>{destroyPeer();show('home')});$('exitGameBtn').addEventListener('click',()=>{destroyPeer();show('home')});$('newGameBtn').addEventListener('click',newRound);
