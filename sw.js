@@ -1,5 +1,5 @@
-const CACHE='knister-v4';
-const APP=['./','./index.html','./styles.css','./app.js','./manifest.webmanifest','./icons/knister-premium-192.png','./icons/knister-premium-v2-512.png'];
+const CACHE='knister-v5';
+const APP=['./','./index.html','./styles.css','./app.js','./manifest.webmanifest','./icons/knister-premium-192.png','./icons/knister-premium-v2-512.png','./icons/apple-touch-icon-180.png','./fonts/knister-sans-regular.woff','./fonts/knister-sans-bold.woff'];
 self.addEventListener('install',event=>{event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(APP)));self.skipWaiting()});
 self.addEventListener('activate',event=>{event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(key=>key!==CACHE).map(key=>caches.delete(key)))));self.clients.claim()});
 self.addEventListener('fetch',event=>{
