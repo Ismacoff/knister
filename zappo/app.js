@@ -5,7 +5,7 @@ const $=id=>document.getElementById(id);
 const screens=['home','lobby','game'];
 let peer=null, hostConn=null, role=null, roomCode='', myName='', myPeerId='', phase='home';
 let conns=new Map();
-let room={phase:'lobby',turn:0,currentRoll:null,dice:[1,1],players:{},rollerId:null,lastAdvancedTurn:0};
+let room={phase:'lobby',roundId:0,turn:0,currentRoll:null,dice:[1,1],players:{},rollerId:null,lastAdvancedTurn:0};
 let isRolling=false;
 let myBoard=Array(25).fill(null), myPlaced=false, lastPlacedIndex=null;
 const lines=[[0,1,2,3,4],[5,6,7,8,9],[10,11,12,13,14],[15,16,17,18,19],[20,21,22,23,24],[0,5,10,15,20],[1,6,11,16,21],[2,7,12,17,22],[3,8,13,18,23],[4,9,14,19,24],[0,6,12,18,24],[20,16,12,8,4]];
@@ -28,7 +28,7 @@ function maybeAdvanceRoller(){
  if(room.phase==='game'&&room.turn>0&&all&&room.lastAdvancedTurn<room.turn){advanceRoller();room.lastAdvancedTurn=room.turn}
 }
 function playerSummary(){return Object.values(room.players).map(p=>({id:p.id,name:p.name,score:p.score||0,filled:p.filled||0,placed:!!p.placed,host:!!p.host})).sort((a,b)=>b.score-a.score||a.name.localeCompare(b.name))}
-function hostPayload(){return{type:'state',phase:room.phase,turn:room.turn,currentRoll:room.currentRoll,dice:room.dice,rollerId:room.rollerId,players:playerSummary()}}
+function hostPayload(){return{type:'state',phase:room.phase,roundId:room.roundId,turn:room.turn,currentRoll:room.currentRoll,dice:room.dice,rollerId:room.rollerId,players:playerSummary()}}
 function broadcast(){if(role==='host'&&room.phase==='game'&&room.turn>=25&&Object.values(room.players).length&&Object.values(room.players).every(p=>p.placed)){room.phase='finished';room.currentRoll=null}const p=hostPayload();conns.forEach(c=>{if(c.open)try{c.send(p)}catch(e){}});renderFromRoom()}
 function setupConn(conn){
  conn.on('data',data=>handleHostData(conn,data));
@@ -44,6 +44,7 @@ function handleHostData(conn,d){
    conns.set(conn.peer,conn);conn.send(hostPayload());broadcast();return;
  }
  const p=room.players[conn.peer]; if(!p)return;
+ if(d.roundId!==undefined&&d.roundId!==room.roundId)return;
  if(d.type==='roll'&&d.turn===room.turn&&canRollNow(conn.peer)){beginHostRoll();return}
  if(d.type==='placed'&&room.phase==='game'&&d.turn===room.turn&&!p.placed&&Array.isArray(d.board)&&d.board.length===25){
    const valid=d.board.every(v=>v===null||(Number.isInteger(v)&&v>=2&&v<=12));if(!valid)return;
@@ -56,7 +57,7 @@ function handleHostData(conn,d){
    const sc=score(d.board);p.score=sc.total;p.filled=filled;p.placed=false;broadcast();
  }
 }
-function destroyPeer(){isRolling=false;dice3d?.hide();try{if(hostConn)hostConn.close()}catch(e){};try{conns.forEach(c=>c.close())}catch(e){};try{if(peer)peer.destroy()}catch(e){};peer=null;hostConn=null;conns.clear();role=null;roomCode='';myPeerId='';room={phase:'lobby',turn:0,currentRoll:null,dice:[1,1],players:{},rollerId:null,lastAdvancedTurn:0};myBoard=Array(25).fill(null);myPlaced=false;lastPlacedIndex=null;setNet('Bereit',false)}
+function destroyPeer(){isRolling=false;dice3d?.hide();try{if(hostConn)hostConn.close()}catch(e){};try{conns.forEach(c=>c.close())}catch(e){};try{if(peer)peer.destroy()}catch(e){};peer=null;hostConn=null;conns.clear();role=null;roomCode='';myPeerId='';room={phase:'lobby',roundId:0,turn:0,currentRoll:null,dice:[1,1],players:{},rollerId:null,lastAdvancedTurn:0};myBoard=Array(25).fill(null);myPlaced=false;lastPlacedIndex=null;setNet('Bereit',false)}
 function getName(){const n=safeName($('nameInput').value);if(!n){$('nameInput').focus();return null}deviceStorage.setItem('wuerfelblatt-name',n);return n}
 function createHost(){
  myName=getName();if(!myName)return;destroyPeer();role='host';roomCode=randomCode();setNet('Verbinde …',false);hideMsg('lobbyMsg');
@@ -75,11 +76,24 @@ function joinRoom(){
  peer.on('error',err=>{if(err.type==='peer-unavailable')msg('lobbyMsg','Raum nicht gefunden. Prüfe den Code.',true);else msg('lobbyMsg','Verbindungsfehler: '+(err.type||'unbekannt'),true);setNet('Nicht verbunden',false);show('lobby')});
  $('roomCode').textContent=code;show('lobby');renderLobby();
 }
+function resetRoundView(){
+ dice3d?.hide();isRolling=false;myBoard=Array(25).fill(null);myPlaced=false;lastPlacedIndex=null;
+ $('ceremony').classList.add('hide');$('ceremony').dataset.round='';$('winnerBox').classList.add('hide');
+}
 function handleGuestData(d){
  if(!d||typeof d!=='object')return;if(d.type==='error'){msg('lobbyMsg',d.message||'Beitritt nicht möglich.',true);return}
- if(d.type==='state'){const prevTurn=room.turn;room.phase=d.phase;room.turn=d.turn;room.currentRoll=d.currentRoll;room.dice=Array.isArray(d.dice)?d.dice:[1,1];room.rollerId=d.rollerId||null;room.players={};(d.players||[]).forEach(p=>room.players[p.id]=p);if(d.turn>prevTurn&&d.currentRoll!=null){lastPlacedIndex=null;animateDice(room.dice[0],room.dice[1],false);}
-   if(room.phase==='game'&&phase!=='game'){myBoard=Array(25).fill(null);myPlaced=false;show('game')}
-   const me=room.players[myPeerId];if(me)myPlaced=!!me.placed;renderFromRoom();
+ if(d.type==='state'){
+   if(Number.isInteger(d.roundId)&&d.roundId<(room.roundId||0))return;
+   const changedRound=Number.isInteger(d.roundId)&&d.roundId!==(room.roundId||0);
+   const restart=d.phase==='game'&&(changedRound||room.phase!=='game'||d.turn<room.turn);
+   const prevTurn=restart?0:room.turn;
+   if(restart)resetRoundView();
+   room.phase=d.phase;room.roundId=d.roundId??room.roundId??0;room.turn=d.turn;room.currentRoll=d.currentRoll;
+   room.dice=Array.isArray(d.dice)?d.dice:[1,1];room.rollerId=d.rollerId||null;room.players={};(d.players||[]).forEach(p=>room.players[p.id]=p);
+   if(room.phase==='game'&&phase!=='game')show('game');
+   const me=room.players[myPeerId];if(me)myPlaced=!!me.placed;
+   if(d.turn>prevTurn&&d.currentRoll!=null){lastPlacedIndex=null;animateDice(room.dice[0],room.dice[1],false)}
+   renderFromRoom();
  }
 }
 function renderLobby(){
@@ -88,7 +102,7 @@ function renderLobby(){
  $('lobbyPlayers').innerHTML=ps.map(p=>`<div class="player"><div class="avatar">${escapeHtml(p.name.slice(0,1).toUpperCase())}</div><div class="pinfo"><b>${escapeHtml(p.name)} ${p.id===myPeerId?'· du':''}</b><small>${p.host?'Spielleiter':'bereit'}</small></div></div>`).join('')||'<div class="mini">Noch niemand im Raum.</div>';
 }
 function startGame(){
- if(role!=='host')return;room.phase='game';room.turn=0;room.currentRoll=null;room.dice=[1,1];room.rollerId=rollOrder()[0]?.id||null;room.lastAdvancedTurn=0;myBoard=Array(25).fill(null);myPlaced=false;lastPlacedIndex=null;Object.values(room.players).forEach(p=>{p.score=0;p.filled=0;p.placed=false});show('game');broadcast()
+ if(role!=='host')return;resetRoundView();room.roundId=(room.roundId||0)+1;room.phase='game';room.turn=0;room.currentRoll=null;room.dice=[1,1];room.rollerId=rollOrder()[0]?.id||null;room.lastAdvancedTurn=0;myBoard=Array(25).fill(null);myPlaced=false;lastPlacedIndex=null;Object.values(room.players).forEach(p=>{p.score=0;p.filled=0;p.placed=false});show('game');broadcast()
 }
 function renderBoard(){
  const sc=score(myBoard);$('sRows').textContent=sc.rows;$('sCols').textContent=sc.cols;$('sDiag').textContent=sc.diag;$('sTotal').textContent=sc.total;
@@ -109,9 +123,9 @@ function renderFromRoom(){
  $('gameName').textContent=myName;$('turnLabel').textContent='Wurf '+room.turn+' / 25';$('currentRoll').textContent=room.currentRoll==null?'–':room.currentRoll;
  const ps=playerSummary(),ready=ps.filter(p=>p.placed).length,all=ps.length>0&&ready===ps.length;
  $('readyCount').textContent=room.currentRoll==null?'':ready+' / '+ps.length+' platziert';
- $('standings').innerHTML=ps.map((p,i)=>`<div class="standing"><span>${i+1}</span><div><b>${escapeHtml(p.name)}${p.id===myPeerId?' · du':''}</b><div class="${p.placed?'check':'wait'}">${room.currentRoll==null?'bereit':p.placed?'✓ platziert':'wartet …'}</div></div><span class="score">${p.score||0}</span></div>`).join('');
+ $('standings').innerHTML=ps.map((p,i)=>`<div class="standing"><span>${1+ps.filter(other=>other.score>p.score).length}</span><div><b>${escapeHtml(p.name)}${p.id===myPeerId?' · du':''}</b><div class="${p.placed?'check':'wait'}">${room.currentRoll==null?'bereit':p.placed?'✓ platziert':'wartet …'}</div></div><span class="score">${p.score||0}</span></div>`).join('');
  const roller=Object.values(room.players).find(p=>p.id===room.rollerId),myTurn=room.rollerId===myPeerId;
- if($('rollerStatus')){$('rollerStatus').classList.toggle('mine',myTurn);$('rollerStatus').querySelector('b').textContent=myTurn?'Du bist mit Würfeln dran':(roller?roller.name+' würfelt':'Würfler wird bestimmt …')}
+ if($('rollerStatus')){$('rollerStatus').classList.toggle('mine',myTurn);$('rollerStatus').querySelector('b').textContent=room.phase==='finished'?'Runde abgeschlossen':myTurn?'Du bist mit Würfeln dran':(roller?roller.name+' würfelt':'Würfler wird bestimmt …')}
  $('hostControls').classList.toggle('hide',room.turn>=25||room.phase==='finished');
  if($('diceBtn')){const canNow=myTurn&&!isRolling&&room.turn<25&&(room.currentRoll===null||all);$('diceBtn').disabled=!canNow;const txt=$('diceBtn').querySelector('span:last-child');if(txt)txt.textContent='Würfeln';$('diceBtn').title=canNow?'Jetzt würfeln':isRolling?'Die Würfel rollen':!myTurn?(roller?.name||'Ein Mitspieler')+' ist dran':'Warte, bis alle eingetragen haben'}
  if($('undoBtn'))$('undoBtn').disabled=!myPlaced||lastPlacedIndex==null||isRolling||room.phase!=='game';
@@ -141,13 +155,13 @@ function showSettledDice(){
 function animateDice(a,b,commit=true){
  isRolling=true;
  if(phase!=='game'){show('game');renderBoard()}
- const activeRoom=room;
+ const activeRoom=room,activeRound=room.roundId;
  audioReady();
  getDice3D().roll(a,b,{
   reduced:window.matchMedia('(prefers-reduced-motion: reduce)').matches,
   onImpact:k=>{thud(0,[.13,.08,.045,.02][k],145-k*15);thud(.045,[.08,.05,.03,.015][k],130-k*12)},
   onDone:()=>{
-   if(room!==activeRoom||room.phase!=='game')return;
+   if(room!==activeRoom||room.roundId!==activeRound||room.phase!=='game')return;
    isRolling=false;
    if(commit){room.dice=[a,b];room.turn++;room.currentRoll=a+b;Object.values(room.players).forEach(p=>p.placed=false);myPlaced=false;lastPlacedIndex=null;broadcast()}
    else renderFromRoom();
@@ -169,13 +183,13 @@ function rollDice(){
  const ps=Object.values(room.players),all=ps.length>0&&ps.every(p=>p.placed);
  if(room.currentRoll!==null&&!all)return;
  if(role==='host')beginHostRoll();
- else if(hostConn&&hostConn.open){$('diceBtn').disabled=true;hostConn.send({type:'roll',turn:room.turn})}
+ else if(hostConn&&hostConn.open){$('diceBtn').disabled=true;hostConn.send({type:'roll',roundId:room.roundId,turn:room.turn})}
 }
 function place(i){
  if(room.phase!=='game'||isRolling||myPlaced||room.currentRoll==null||myBoard[i]!=null)return;myBoard[i]=room.currentRoll;myPlaced=true;lastPlacedIndex=i;
  const sc=score(myBoard);
  if(role==='host'){const me=room.players[myPeerId];me.score=sc.total;me.filled=room.turn;me.placed=true;maybeAdvanceRoller();broadcast()}
- else if(hostConn&&hostConn.open){hostConn.send({type:'placed',turn:room.turn,board:myBoard})}
+ else if(hostConn&&hostConn.open){hostConn.send({type:'placed',roundId:room.roundId,turn:room.turn,board:myBoard})}
  renderBoard();renderFromRoom()
 }
 function undoLastMove(){
@@ -185,16 +199,21 @@ function undoLastMove(){
  if(role==='host'){
   const me=room.players[myPeerId];if(me){me.score=sc.total;me.filled=Math.max(0,room.turn-1);me.placed=false}broadcast();
  }else if(hostConn&&hostConn.open){
-  hostConn.send({type:'undo',turn:room.turn,board:myBoard});
+  hostConn.send({type:'undo',roundId:room.roundId,turn:room.turn,board:myBoard});
  }
  renderBoard();renderFromRoom();
 }
 function finishGame(){
- const ps=playerSummary();if(!ps.length)return;const top=ps[0].score,w=ps.filter(p=>p.score===top);
- $('winnerBox').innerHTML=`<div class="label">Runde beendet</div><b>${escapeHtml(w.map(x=>x.name).join(' & '))}</b><div>${top} Punkte</div>`;$('winnerBox').classList.remove('hide');$('newGameBtn').classList.toggle('hide',role!=='host');$('hostControls').classList.add('hide');
- if(role==='host'&&room.phase!=='finished'){room.phase='finished';broadcast()}
+ const ps=playerSummary();if(!ps.length)return;const top=ps[0].score,w=ps.filter(p=>p.score===top),box=$('ceremony');
+ const first=box.dataset.round!==String(room.roundId);box.dataset.round=String(room.roundId);
+ $('ceremonyTitle').textContent=w.length>1?'Gemeinsam auf Platz 1!':w[0].id===myPeerId?'Du hast gewonnen!':'Der Sieg geht an …';
+ $('championName').textContent=w.map(p=>p.name).join(' & ');$('championPoints').textContent=top+' Punkte';
+ $('finalRanking').innerHTML=ps.map(p=>{const rank=1+ps.filter(other=>other.score>p.score).length;return `<li class="${rank===1?'gold':''}"><span class="medal">${rank===1?'★':rank}</span><b>${escapeHtml(p.name)}${p.id===myPeerId?' · du':''}</b><span>${p.score}<small>Punkte</small></span></li>`}).join('');
+ $('ceremonyWait').textContent=role==='host'?'Alle bleiben im Raum. Bereit für die Revanche?':'Warte auf die nächste Runde vom Spielleiter.';
+ box.classList.remove('hide');$('newGameBtn').classList.toggle('hide',role!=='host');$('winnerBox').classList.add('hide');$('hostControls').classList.add('hide');
+ if(first){box.scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth',block:'start'});$('ceremonyTitle').focus({preventScroll:true})}
 }
-function newRound(){if(role!=='host')return;$('winnerBox').classList.add('hide');$('newGameBtn').classList.add('hide');room.phase='game';room.turn=0;room.currentRoll=null;room.dice=[1,1];room.rollerId=rollOrder()[0]?.id||null;room.lastAdvancedTurn=0;myBoard=Array(25).fill(null);myPlaced=false;lastPlacedIndex=null;Object.values(room.players).forEach(p=>{p.score=0;p.filled=0;p.placed=false});broadcast()}
+function newRound(){if(role!=='host'||room.phase!=='finished')return;startGame();document.querySelector('.board-card').scrollIntoView({block:'start'})}
 function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 $('hostBtn').addEventListener('click',createHost);$('joinBtn').addEventListener('click',joinRoom);$('startBtn').addEventListener('click',startGame);
 $('leaveBtn').addEventListener('click',()=>{destroyPeer();show('home')});$('exitGameBtn').addEventListener('click',()=>{destroyPeer();show('home')});$('newGameBtn').addEventListener('click',newRound);
