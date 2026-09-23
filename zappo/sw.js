@@ -1,4 +1,4 @@
-const CACHE='wuerfelblatt-zappo-v9';
+const CACHE='wuerfelblatt-zappo-v10';
 const APP=['./','./index.html','./styles.css','./app.js','./vendor/dice3d.min.js','./peerjs.min.js','./manifest.webmanifest','./assets/materials.webp','./fonts/caveat.ttf','./fonts/knister-sans-regular.woff','./fonts/knister-sans-bold.woff','./assets/zappo-logo.webp','./assets/ya5-games.webp','./icons/zappo-180.png','./icons/zappo-192.png','./icons/zappo-512.png','./icons/zappo-maskable-512.png'];
 self.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE).then(c=>c.addAll(APP)));self.skipWaiting()});
 self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k.startsWith('wuerfelblatt-')&&k!==CACHE).map(k=>caches.delete(k)))));self.clients.claim()});

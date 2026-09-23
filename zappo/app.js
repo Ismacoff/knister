@@ -9,7 +9,7 @@ let room={phase:'lobby',turn:0,currentRoll:null,dice:[1,1],players:{},rollerId:n
 let isRolling=false;
 let myBoard=Array(25).fill(null), myPlaced=false, lastPlacedIndex=null;
 const lines=[[0,1,2,3,4],[5,6,7,8,9],[10,11,12,13,14],[15,16,17,18,19],[20,21,22,23,24],[0,5,10,15,20],[1,6,11,16,21],[2,7,12,17,22],[3,8,13,18,23],[4,9,14,19,24],[0,6,12,18,24],[20,16,12,8,4]];
-function show(id){document.body.dataset.screen=id;if(id!=='game')dice3d?.hide();screens.forEach(s=>$(s).classList.toggle('active',s===id));phase=id}
+function show(id){document.body.dataset.screen=id;if(id==='lobby')updateInvitation();if(id!=='game')dice3d?.hide();screens.forEach(s=>$(s).classList.toggle('active',s===id));phase=id}
 function safeName(s){return String(s||'').trim().replace(/\s+/g,' ').slice(0,20)}
 function randomCode(){const chars='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';return Array.from({length:5},()=>chars[Math.floor(Math.random()*chars.length)]).join('')}
 function setNet(text,on=true){$('netText').textContent=text;$('netDot').classList.toggle('on',on)}
@@ -83,7 +83,7 @@ function handleGuestData(d){
  }
 }
 function renderLobby(){
- $('startBtn').classList.toggle('hide',role!=='host');$('startBtn').disabled=role!=='host'||Object.keys(room.players).length<1;$('roomCode').textContent=roomCode||'-----';
+ $('startBtn').classList.toggle('hide',role!=='host');$('startBtn').disabled=role!=='host'||Object.keys(room.players).length<1;$('roomCode').textContent=roomCode||'-----';updateInvitation();
  const ps=playerSummary();$('playerCount').textContent=ps.length+' '+(ps.length===1?'Spieler':'Spieler');
  $('lobbyPlayers').innerHTML=ps.map(p=>`<div class="player"><div class="avatar">${escapeHtml(p.name.slice(0,1).toUpperCase())}</div><div class="pinfo"><b>${escapeHtml(p.name)} ${p.id===myPeerId?'· du':''}</b><small>${p.host?'Spielleiter':'bereit'}</small></div></div>`).join('')||'<div class="mini">Noch niemand im Raum.</div>';
 }
@@ -233,3 +233,24 @@ document.querySelectorAll('[data-theme-choice]').forEach(btn=>btn.addEventListen
 document.addEventListener('keydown',event=>{if(event.key==='Escape')closeThemeSettings()});
 applyTheme(deviceStorage.getItem('wuerfelblatt-theme')||'classic');
 window.addEventListener('resize',()=>{if(phase==='game'&&!isRolling)showSettledDice()});
+
+function invitationText(){
+ const url=new URL(location.protocol==='https:'||location.protocol==='http:'?location.href:'https://ismacoff.github.io/knister/zappo/');
+ url.search='';url.hash='';url.searchParams.set('code',roomCode);
+ return `Spiel mit mir ZAPPO! 🎲\n${url.href}\n\nRaumcode: ${roomCode}\nLink öffnen, Namen eingeben und beitreten.`;
+}
+function updateInvitation(){
+ const valid=/^[A-Z0-9]{5}$/.test(roomCode);$('copyInviteBtn').disabled=!valid;
+ const link=$('whatsappInvite');link.setAttribute('aria-disabled',String(!valid));
+ if(valid)link.href='https://wa.me/?text='+encodeURIComponent(invitationText());else link.removeAttribute('href');
+ $('inviteStatus').textContent='';$('inviteFallback').classList.add('hide');
+}
+$('copyInviteBtn').addEventListener('click',async()=>{
+ if(!/^[A-Z0-9]{5}$/.test(roomCode))return;
+ const text=invitationText();let copied=false;
+ try{await navigator.clipboard.writeText(text);copied=true}catch{}
+ if(!copied){const field=$('inviteFallback');field.value=text;field.classList.remove('hide');field.focus();field.select();field.setSelectionRange(0,text.length);try{copied=document.execCommand('copy')}catch{}if(copied)field.classList.add('hide')}
+ $('inviteStatus').textContent=copied?'Einladung mit Link und Code kopiert.':'Bitte den markierten Einladungstext kopieren.';
+});
+const invitationCode=new URLSearchParams(location.search).get('code')?.trim().toUpperCase();
+if(invitationCode&&/^[A-Z0-9]{5}$/.test(invitationCode)){$('codeInput').value=invitationCode;$('codeInput').closest('.join-row').scrollIntoView({block:'center'});}
