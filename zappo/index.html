@@ -8,13 +8,13 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="ZAPPO">
-<link rel="manifest" href="manifest.webmanifest?v=zappo11">
+<link rel="manifest" href="manifest.webmanifest?v=zappo12">
 <link rel="icon" type="image/png" sizes="192x192" href="icons/zappo-192.png?v=4">
 <link rel="apple-touch-icon" sizes="180x180" href="icons/zappo-180.png?v=4">
 <link rel="apple-touch-icon-precomposed" sizes="180x180" href="icons/zappo-180.png?v=4">
 <meta name="description" content="ZAPPO Online – gemeinsam über das Internet spielen.">
 <title>ZAPPO Online</title>
-<link rel="stylesheet" href="styles.css?v=zappo11">
+<link rel="stylesheet" href="styles.css?v=zappo12">
 <script src="peerjs.min.js"></script>
 </head>
 <body data-screen="home">
@@ -53,7 +53,7 @@
 </section>
 
 <section id="lobby" class="screen">
-<div id="lobbyMsg" class="message hide"></div>
+<div id="lobbyMsg" class="message hide"></div><button id="retryConnectionBtn" class="btn retry-connection">Erneut verbinden</button>
 <div class="lobby">
 <div class="card room-card">
 <div class="label">Euer Spielraum</div>
@@ -61,7 +61,7 @@
 <div class="roomcode"><span>Raumcode</span><div class="roomcode-actions"><strong id="roomCode">-----</strong><button id="copyInviteBtn" class="btn copy-invite" aria-label="Einladung mit Link und Raumcode kopieren" title="Einladung kopieren"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="12" height="13" rx="2"/><path d="M16 5V3H3v13h2"/></svg><span>Kopieren</span></button></div></div>
 <div class="invite-actions"><a id="whatsappInvite" class="btn" target="_blank" rel="noopener noreferrer">Per WhatsApp einladen</a><span id="inviteStatus" role="status" aria-live="polite"></span></div>
 <textarea id="inviteFallback" class="invite-fallback hide" readonly aria-label="Einladung zum manuellen Kopieren"></textarea>
-<p class="mini">Der Ersteller bleibt während des Spiels online. Sobald alle da sind, startet er die Runde.</p>
+<p class="mini">Nach dem Versenden der Einladung bitte zu ZAPPO zurückkehren und die App geöffnet lassen. Sobald alle da sind, startet der Spielleiter die Runde.</p>
 <button id="startBtn" class="btn primary" style="width:100%">Spiel starten</button>
 <button id="leaveBtn" class="btn" style="width:100%;margin-top:9px">Raum verlassen</button>
 </div>
@@ -162,6 +162,6 @@
 
 <img id="dicePaperTexture" src="assets/materials.webp" alt="" hidden>
 <script src="vendor/dice3d.min.js?v=6"></script>
-<script src="app.js?v=zappo11"></script>
+<script src="app.js?v=zappo12"></script>
 </body>
 </html>

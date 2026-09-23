@@ -5,6 +5,8 @@ const $=id=>document.getElementById(id);
 const screens=['home','lobby','game'];
 let peer=null, hostConn=null, role=null, roomCode='', myName='', myPeerId='', phase='home';
 let conns=new Map();
+let signalReady=false,guestJoined=false,retryTimer=null,joinTimer=null,retryCount=0,sessionVersion=0;
+const departureTimers=new Map();
 let room={phase:'lobby',roundId:0,turn:0,currentRoll:null,dice:[1,1],players:{},rollerId:null,lastAdvancedTurn:0};
 let isRolling=false;
 let myBoard=Array(25).fill(null), myPlaced=false, lastPlacedIndex=null;
@@ -32,15 +34,20 @@ function hostPayload(){return{type:'state',phase:room.phase,roundId:room.roundId
 function broadcast(){if(role==='host'&&room.phase==='game'&&room.turn>=25&&Object.values(room.players).length&&Object.values(room.players).every(p=>p.placed)){room.phase='finished';room.currentRoll=null}const p=hostPayload();conns.forEach(c=>{if(c.open)try{c.send(p)}catch(e){}});renderFromRoom()}
 function setupConn(conn){
  conn.on('data',data=>handleHostData(conn,data));
- conn.on('close',()=>{conns.delete(conn.peer);if(room.players[conn.peer]){delete room.players[conn.peer];ensureRoller();broadcast()}});
+ conn.on('close',()=>{
+   if(conns.get(conn.peer)!==conn)return;conns.delete(conn.peer);
+   const version=sessionVersion;clearTimeout(departureTimers.get(conn.peer));
+   departureTimers.set(conn.peer,setTimeout(()=>{departureTimers.delete(conn.peer);if(version!==sessionVersion||conns.has(conn.peer))return;if(room.players[conn.peer]){delete room.players[conn.peer];ensureRoller();broadcast()}},45000));
+ });
  conn.on('error',()=>{});
 }
 function handleHostData(conn,d){
  if(!d||typeof d!=='object')return;
  if(d.type==='join'){
-   if(room.phase!=='lobby'){conn.send({type:'error',message:'Dieses Spiel läuft bereits.'});setTimeout(()=>conn.close(),300);return}
+   if(room.phase!=='lobby'&&!room.players[conn.peer]){conn.send({type:'error',message:'Dieses Spiel läuft bereits.'});setTimeout(()=>conn.close(),300);return}
    const n=safeName(d.name)||'Spieler';
-   room.players[conn.peer]={id:conn.peer,name:n,score:0,filled:0,placed:false,host:false};
+   clearTimeout(departureTimers.get(conn.peer));departureTimers.delete(conn.peer);
+   if(!room.players[conn.peer])room.players[conn.peer]={id:conn.peer,name:n,score:0,filled:0,placed:false,host:false};
    conns.set(conn.peer,conn);conn.send(hostPayload());broadcast();return;
  }
  const p=room.players[conn.peer]; if(!p)return;
@@ -57,25 +64,70 @@ function handleHostData(conn,d){
    const sc=score(d.board);p.score=sc.total;p.filled=filled;p.placed=false;broadcast();
  }
 }
-function destroyPeer(){isRolling=false;dice3d?.hide();try{if(hostConn)hostConn.close()}catch(e){};try{conns.forEach(c=>c.close())}catch(e){};try{if(peer)peer.destroy()}catch(e){};peer=null;hostConn=null;conns.clear();role=null;roomCode='';myPeerId='';room={phase:'lobby',roundId:0,turn:0,currentRoll:null,dice:[1,1],players:{},rollerId:null,lastAdvancedTurn:0};myBoard=Array(25).fill(null);myPlaced=false;lastPlacedIndex=null;setNet('Bereit',false)}
+function destroyPeer(){sessionVersion++;clearTimeout(retryTimer);clearTimeout(joinTimer);retryTimer=joinTimer=null;departureTimers.forEach(clearTimeout);departureTimers.clear();signalReady=false;guestJoined=false;retryCount=0;const oldPeer=peer,oldConns=[...conns.values()];peer=null;conns.clear();isRolling=false;dice3d?.hide();try{if(hostConn)hostConn.close()}catch(e){};try{oldConns.forEach(c=>c.close())}catch(e){};try{if(oldPeer)oldPeer.destroy()}catch(e){};peer=null;hostConn=null;conns.clear();role=null;roomCode='';myPeerId='';room={phase:'lobby',roundId:0,turn:0,currentRoll:null,dice:[1,1],players:{},rollerId:null,lastAdvancedTurn:0};myBoard=Array(25).fill(null);myPlaced=false;lastPlacedIndex=null;setNet('Bereit',false)}
 function getName(){const n=safeName($('nameInput').value);if(!n){$('nameInput').focus();return null}deviceStorage.setItem('wuerfelblatt-name',n);return n}
+function connectionNotice(text){setNet('Verbinde erneut …',false);msg(phase==='game'?'gameMsg':'lobbyMsg',text);if(phase==='lobby')renderLobby();}
+function scheduleReconnect(text){
+ connectionNotice(text);if(retryTimer||!role)return;
+ if(retryCount>=12){setNet('Nicht verbunden',false);msg(phase==='game'?'gameMsg':'lobbyMsg','Die Verbindung konnte nicht hergestellt werden. Internet prüfen und „Erneut verbinden“ tippen.',true);return}
+ const version=sessionVersion;retryTimer=setTimeout(()=>{retryTimer=null;if(version!==sessionVersion)return;retryCount++;recoverConnection()},Math.min(1500+retryCount*700,5000));
+}
+function recoverConnection(){
+ if(!role)return;
+ if(navigator.onLine===false){scheduleReconnect('Kein Internet. Die Verbindung wird automatisch erneut versucht.');return}
+ if(!peer||peer.destroyed){openPeer();return}
+ if(peer.disconnected){try{peer.reconnect()}catch{}scheduleReconnect('Der Raum wird unter demselben Code wieder verbunden.');return}
+ if(!signalReady){scheduleReconnect('Die Verbindung zum Raum wird wiederhergestellt.');return}
+ if(role==='guest'&&!guestJoined)connectToHost();
+}
+function openPeer(){
+ const version=sessionVersion;
+ const id=role==='host'?'wuerfelblatt-'+roomCode.toLowerCase():(myPeerId||undefined);
+ const current=new Peer(id);peer=current;signalReady=false;
+ const active=()=>version===sessionVersion&&peer===current;
+ current.on('open',pid=>{
+   if(!active())return;signalReady=true;clearTimeout(retryTimer);retryTimer=null;retryCount=0;myPeerId=pid;
+   if(role==='host'){
+     if(!room.players[pid])room.players[pid]={id:pid,name:myName,score:0,filled:0,placed:false,host:true};
+     setNet('Online');hideMsg('lobbyMsg');hideMsg('gameMsg');if(phase==='home')show('lobby');renderFromRoom();
+   }else connectToHost();
+ });
+ current.on('connection',conn=>{if(active()&&role==='host')setupConn(conn)});
+ current.on('disconnected',()=>{if(!active())return;signalReady=false;scheduleReconnect('Verbindung unterbrochen. Bitte ZAPPO geöffnet lassen – der Raum wird wieder verbunden.');});
+ current.on('error',err=>{
+   if(!active())return;
+   if(err.type==='unavailable-id'&&role==='host'&&!room.players[myPeerId]){current.destroy();roomCode=randomCode();openPeer();return}
+   if(err.type==='peer-unavailable'&&role==='guest'){guestJoined=false;clearTimeout(joinTimer);joinTimer=null;const old=hostConn;hostConn=null;try{old?.close()}catch{}scheduleReconnect('Der Spielleiter ist noch nicht erreichbar. Er muss nach WhatsApp zu ZAPPO zurückkehren. Wir versuchen es erneut.');return}
+   signalReady=false;scheduleReconnect('Online-Verbindung unterbrochen. Sie wird automatisch wiederhergestellt.');
+ });
+ current.on('close',()=>{if(active()){signalReady=false;scheduleReconnect('Verbindung geschlossen. Der Raum wird erneut verbunden.')}});
+}
+function connectToHost(){
+ if(role!=='guest'||!signalReady||!peer||guestJoined||joinTimer)return;
+ const current=peer,version=sessionVersion;const previous=hostConn;hostConn=null;try{previous?.close()}catch{}
+ const conn=current.connect('wuerfelblatt-'+roomCode.toLowerCase(),{reliable:true});hostConn=conn;
+ const active=()=>version===sessionVersion&&peer===current&&hostConn===conn;
+ connectionNotice('Beitritt läuft … Bitte warten, bis der Spielleiter wieder in ZAPPO ist.');
+ joinTimer=setTimeout(()=>{joinTimer=null;if(!active()||guestJoined)return;hostConn=null;try{conn.close()}catch{}scheduleReconnect('Der Spielleiter ist noch nicht erreichbar. Der Beitritt wird erneut versucht.');},10000);
+ conn.on('open',()=>{if(active())conn.send({type:'join',name:myName})});
+ conn.on('data',d=>{
+   if(!active())return;
+   if(d?.type==='state'){guestJoined=true;retryCount=0;clearTimeout(joinTimer);clearTimeout(retryTimer);joinTimer=retryTimer=null;setNet('Online');hideMsg('lobbyMsg');hideMsg('gameMsg')}
+   if(d?.type==='error'){clearTimeout(joinTimer);clearTimeout(retryTimer);joinTimer=retryTimer=null;hostConn=null;guestJoined=false;conn.close();setNet('Beitritt nicht möglich',false)}
+   handleGuestData(d);
+ });
+ const lost=()=>{if(!active())return;guestJoined=false;clearTimeout(joinTimer);joinTimer=null;hostConn=null;scheduleReconnect('Verbindung zum Spielleiter unterbrochen. Wir versuchen es erneut.');};
+ conn.on('close',lost);conn.on('error',lost);
+}
 function createHost(){
- myName=getName();if(!myName)return;destroyPeer();role='host';roomCode=randomCode();setNet('Verbinde …',false);hideMsg('lobbyMsg');
- function attempt(){
-   const id='wuerfelblatt-'+roomCode.toLowerCase();peer=new Peer(id);
-   peer.on('open',pid=>{myPeerId=pid;room.players[pid]={id:pid,name:myName,score:0,filled:0,placed:false,host:true};setNet('Online');$('roomCode').textContent=roomCode;show('lobby');renderLobby();});
-   peer.on('connection',conn=>setupConn(conn));
-   peer.on('error',err=>{if(err.type==='unavailable-id'){try{peer.destroy()}catch(e){};roomCode=randomCode();attempt()}else{setNet('Verbindungsfehler',false);msg('lobbyMsg','Online-Verbindung konnte nicht aufgebaut werden: '+(err.type||'Fehler'),true);show('lobby')}});
- }
- attempt();
+ myName=getName();if(!myName)return;destroyPeer();role='host';roomCode=randomCode();show('lobby');connectionNotice('Spielraum wird verbunden …');openPeer();
 }
 function joinRoom(){
  myName=getName();if(!myName)return;const code=$('codeInput').value.trim().toUpperCase().replace(/[^A-Z0-9]/g,'');if(code.length!==5){$('codeInput').focus();return}
- destroyPeer();role='guest';roomCode=code;setNet('Verbinde …',false);hideMsg('lobbyMsg');peer=new Peer();
- peer.on('open',pid=>{myPeerId=pid;hostConn=peer.connect('wuerfelblatt-'+code.toLowerCase(),{reliable:true});hostConn.on('open',()=>{hostConn.send({type:'join',name:myName});setNet('Online')});hostConn.on('data',handleGuestData);hostConn.on('close',()=>{setNet('Verbindung beendet',false);msg(phase==='game'?'gameMsg':'lobbyMsg','Der Spielleiter hat den Raum verlassen.',true)});hostConn.on('error',()=>msg('lobbyMsg','Verbindung zum Raum fehlgeschlagen.',true));});
- peer.on('error',err=>{if(err.type==='peer-unavailable')msg('lobbyMsg','Raum nicht gefunden. Prüfe den Code.',true);else msg('lobbyMsg','Verbindungsfehler: '+(err.type||'unbekannt'),true);setNet('Nicht verbunden',false);show('lobby')});
- $('roomCode').textContent=code;show('lobby');renderLobby();
+ destroyPeer();role='guest';roomCode=code;show('lobby');connectionNotice('Verbindung zum Spielleiter wird hergestellt …');openPeer();
 }
+function resumeConnection(){if(!role||document.visibilityState==='hidden')return;clearTimeout(retryTimer);retryTimer=null;retryCount=0;recoverConnection()}
+window.addEventListener('online',resumeConnection);window.addEventListener('pageshow',resumeConnection);document.addEventListener('visibilitychange',resumeConnection);
 function resetRoundView(){
  dice3d?.hide();isRolling=false;myBoard=Array(25).fill(null);myPlaced=false;lastPlacedIndex=null;
  $('ceremony').classList.add('hide');$('ceremony').dataset.round='';$('winnerBox').classList.add('hide');
@@ -97,9 +149,9 @@ function handleGuestData(d){
  }
 }
 function renderLobby(){
- $('startBtn').classList.toggle('hide',role!=='host');$('startBtn').disabled=role!=='host'||Object.keys(room.players).length<1;$('roomCode').textContent=roomCode||'-----';updateInvitation();
+ $('startBtn').classList.toggle('hide',role!=='host');$('startBtn').disabled=role!=='host'||!signalReady||Object.keys(room.players).length<1;$('roomCode').textContent=roomCode||'-----';updateInvitation();
  const ps=playerSummary();$('playerCount').textContent=ps.length+' '+(ps.length===1?'Spieler':'Spieler');
- $('lobbyPlayers').innerHTML=ps.map(p=>`<div class="player"><div class="avatar">${escapeHtml(p.name.slice(0,1).toUpperCase())}</div><div class="pinfo"><b>${escapeHtml(p.name)} ${p.id===myPeerId?'· du':''}</b><small>${p.host?'Spielleiter':'bereit'}</small></div></div>`).join('')||'<div class="mini">Noch niemand im Raum.</div>';
+ $('lobbyPlayers').innerHTML=ps.map(p=>`<div class="player"><div class="avatar">${escapeHtml(p.name.slice(0,1).toUpperCase())}</div><div class="pinfo"><b>${escapeHtml(p.name)} ${p.id===myPeerId?'· du':''}</b><small>${p.host?'Spielleiter':'bereit'}</small></div></div>`).join('')||'<div class="mini">Verbindung zum Spielleiter wird hergestellt …</div>';
 }
 function startGame(){
  if(role!=='host')return;resetRoundView();room.roundId=(room.roundId||0)+1;room.phase='game';room.turn=0;room.currentRoll=null;room.dice=[1,1];room.rollerId=rollOrder()[0]?.id||null;room.lastAdvancedTurn=0;myBoard=Array(25).fill(null);myPlaced=false;lastPlacedIndex=null;Object.values(room.players).forEach(p=>{p.score=0;p.filled=0;p.placed=false});show('game');broadcast()
@@ -259,13 +311,13 @@ function invitationText(){
  return `Spiel mit mir ZAPPO! 🎲\n${url.href}\n\nRaumcode: ${roomCode}\nLink öffnen, Namen eingeben und beitreten.`;
 }
 function updateInvitation(){
- const valid=/^[A-Z0-9]{5}$/.test(roomCode);$('copyInviteBtn').disabled=!valid;
+ const valid=/^[A-Z0-9]{5}$/.test(roomCode)&&(role==='host'?signalReady:guestJoined);$('copyInviteBtn').disabled=!valid;
  const link=$('whatsappInvite');link.setAttribute('aria-disabled',String(!valid));
  if(valid)link.href='https://wa.me/?text='+encodeURIComponent(invitationText());else link.removeAttribute('href');
  $('inviteStatus').textContent='';$('inviteFallback').classList.add('hide');
 }
 $('copyInviteBtn').addEventListener('click',async()=>{
- if(!/^[A-Z0-9]{5}$/.test(roomCode))return;
+ if($('copyInviteBtn').disabled||!/^[A-Z0-9]{5}$/.test(roomCode))return;
  const text=invitationText();let copied=false;
  try{await navigator.clipboard.writeText(text);copied=true}catch{}
  if(!copied){const field=$('inviteFallback');field.value=text;field.classList.remove('hide');field.focus();field.select();field.setSelectionRange(0,text.length);try{copied=document.execCommand('copy')}catch{}if(copied)field.classList.add('hide')}
@@ -273,3 +325,5 @@ $('copyInviteBtn').addEventListener('click',async()=>{
 });
 const invitationCode=new URLSearchParams(location.search).get('code')?.trim().toUpperCase();
 if(invitationCode&&/^[A-Z0-9]{5}$/.test(invitationCode)){$('codeInput').value=invitationCode;$('codeInput').closest('.join-row').scrollIntoView({block:'center'});}
+
+$('retryConnectionBtn').addEventListener('click',resumeConnection);
