@@ -1,0 +1,16 @@
+ZAPPO – Version 9
+
+INSTALLATION
+Den kompletten Ordner zappo aus ZAPPO-App.zip auf einen HTTPS-Webserver hochladen. Danach die Adresse dieses Ordners auf dem Handy öffnen.
+Android: Im Browser „App installieren“ wählen oder den Installieren-Button auf der Startseite verwenden, sobald der Browser ihn anbietet.
+iPhone/iPad: In Safari „Teilen“ → „Zum Home-Bildschirm“ wählen.
+
+Eine heruntergeladene HTML-Datei allein lässt sich nicht als PWA installieren. ZAPPO-v9.html ist die eigenständige Vorschau zum direkten Öffnen.
+
+Enthaltene Spiele-Icons: Android 192 und 512 Pixel, Android maskable 512 Pixel, Apple 180 Pixel. Alle zeigen das ZAPPO-Spielmotiv.
+
+Startseite: YA5 Games oben links, kein Firmenlogo unten. Spiel und Lobby: ZAPPO oben links, YA5 Games unten rechts.
+
+Nach dem ersten Laden ist die Oberfläche offline verfügbar. Mehrspieler benötigt Internet, und der Raum-Ersteller muss verbunden bleiben.
+
+Schrift Caveat unter SIL OFL, siehe fonts/Caveat-LICENSE.txt. Three.js-Lizenz: vendor/three-LICENSE.txt.

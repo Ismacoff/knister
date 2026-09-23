@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#142e40">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="ZAPPO">
+<link rel="manifest" href="manifest.webmanifest?v=zappo9">
+<link rel="icon" type="image/png" sizes="192x192" href="icons/zappo-192.png?v=4">
+<link rel="apple-touch-icon" sizes="180x180" href="icons/zappo-180.png?v=4">
+<link rel="apple-touch-icon-precomposed" sizes="180x180" href="icons/zappo-180.png?v=4">
+<meta name="description" content="ZAPPO Online – gemeinsam über das Internet spielen.">
+<title>ZAPPO Online</title>
+<link rel="stylesheet" href="styles.css?v=zappo9">
+<script src="peerjs.min.js"></script>
+</head>
+<body data-screen="home">
+<div class="app">
+<header class="top"><div class="brand"><img class="brand-logo game-header" src="assets/zappo-logo.webp" alt="ZAPPO" width="2007" height="784"><img class="brand-logo publisher-header" src="assets/ya5-games.webp" alt="YA5 Games" width="2000" height="800"></div><div class="top-actions"><button id="settingsBtn" class="settings-btn" aria-label="Darstellung auswählen" title="Darstellung auswählen"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h7m4 0h5M4 17h3m4 0h9"/><circle cx="13" cy="7" r="2.25"/><circle cx="9" cy="17" r="2.25"/></svg></button><div class="pill"><span id="netDot" class="dot"></span><span id="netText">Bereit</span></div></div></header>
+
+<section id="home" class="screen active">
+<div class="lounge-home">
+  <div class="card welcome-panel">
+    <div class="welcome-badge"><span></span> Nehmt Platz am Spieltisch</div>
+<div class="welcome-copy"><div class="eyebrow">WÜRFEL. PAPIER. LIEBLINGSMENSCHEN.</div><h1 class="logo-title"><img class="welcome-logo" src="assets/zappo-logo.webp" alt="ZAPPO – Würfeln. Eintragen. Gewinnen." width="2007" height="784"></h1><p>Das Gefühl eines echten Spieleabends.<br>Auch wenn ihr nicht am selben Tisch sitzt.</p></div><div class="tableau" aria-hidden="true"><div class="sample-pad"><div class="pad-title">ZAPPO<span>Ein guter Wurf. Dein bester Platz.</span></div><div class="sample-grid"><span>7</span><span>4</span><span>9</span><span>8</span><span>6</span><span>5</span><span>7</span><span>6</span><span>10</span><span>8</span><span>8</span><span>6</span><span>7</span><span>9</span><span>5</span><span>4</span><span>10</span><span>8</span><span>7</span><span>6</span><span>6</span><span>5</span><span>4</span><span>8</span><span>7</span></div><div class="pad-signature">Zeit für eine gute Runde.</div></div><div class="hero-die first" data-value="5"><span class="pip center"></span><span class="pip tl"></span><span class="pip tr"></span><span class="pip ml"></span><span class="pip mr"></span><span class="pip bl"></span><span class="pip br"></span></div><div class="hero-die second" data-value="3"><span class="pip center"></span><span class="pip tl"></span><span class="pip tr"></span><span class="pip ml"></span><span class="pip mr"></span><span class="pip bl"></span><span class="pip br"></span></div></div>    <div class="welcome-features">
+      <span><b>●</b> Live verbunden</span>
+      <span>Ohne Anmeldung</span>
+      <span>Kostenlos</span>
+    </div>
+
+  </div>
+  <div class="card entry-panel">
+    <div class="entry-heading">
+      <div class="label">DER ABEND GEHÖRT EUCH</div>
+      <h2>Dein Platz ist frei.</h2>
+      <p>Gib deinen Namen ein und eröffne einen Raum oder tritt mit einem Code bei.</p>
+    </div>
+    <label class="label" for="nameInput">Dein Spielername</label>
+    <input id="nameInput" class="field" maxlength="20" placeholder="z. B. Arndt" autocomplete="nickname">
+    <button id="hostBtn" class="btn primary create-room-btn"><span>＋</span> Raum erstellen</button>
+    <div class="entry-divider"><span>oder beitreten</span></div>
+    <div class="join-row">
+      <input id="codeInput" class="field code" maxlength="5" placeholder="CODE" aria-label="Raumcode" autocapitalize="characters">
+      <button id="joinBtn" class="btn soft">Beitreten</button>
+    </div>
+    <button id="installBtn" class="btn install-btn hide"><span>↓</span> ZAPPO installieren</button>
+    <div class="privacy-note"><span>✓</span> Jeder spielt auf seinem eigenen Block.</div>
+  </div>
+</div>
+</section>
+
+<section id="lobby" class="screen">
+<div id="lobbyMsg" class="message hide"></div>
+<div class="lobby">
+<div class="card room-card">
+<div class="label">Euer Spielraum</div>
+<h2>Alle mit demselben Code reinholen</h2>
+<div class="roomcode"><span>Raumcode</span><strong id="roomCode">-----</strong></div>
+<p class="mini">Der Ersteller bleibt während des Spiels online. Sobald alle da sind, startet er die Runde.</p>
+<button id="startBtn" class="btn primary" style="width:100%">Spiel starten</button>
+<button id="leaveBtn" class="btn" style="width:100%;margin-top:9px">Raum verlassen</button>
+</div>
+<div class="card players-card">
+<div class="section-title"><h2>Mitspieler</h2><small id="playerCount">0 Spieler</small></div>
+<div id="lobbyPlayers" class="players"></div>
+</div>
+</div>
+</section>
+
+<section id="game" class="screen">
+<div id="gameMsg" class="message hide"></div>
+<div class="game">
+<div class="card board-card">
+<div class="section-title"><div><div class="label">Dein Spielblock</div><h2 id="gameName">Spieler</h2></div><small id="turnLabel">Wurf 0 / 25</small></div>
+<div class="bar"><span id="progress" style="width:0%"></span></div>
+<div class="roll-panel">
+  <div class="turnbox compact-turn">
+    <div id="rollerStatus" class="roller-status"><span></span><b>Würfler wird bestimmt …</b></div>
+    <div id="diceDock" class="dice-dock" aria-label="Gewürfelte Augen"><span id="currentRoll" class="sr-only" aria-live="polite">–</span></div>
+    <div id="turnHint" class="mini">Der Spielleiter würfelt zuerst.</div>
+  </div>
+  <div class="roll-actions">
+    <div id="hostControls" class="hostroll hide">
+      <button id="diceBtn" class="btn dice-btn"><svg class="dice-button-symbol" viewBox="0 0 32 32" aria-hidden="true"><rect x="5" y="5" width="22" height="22" rx="6" transform="rotate(-12 16 16)"/><g transform="rotate(-12 16 16)"><circle cx="11" cy="11" r="1.8"/><circle cx="21" cy="11" r="1.8"/><circle cx="16" cy="16" r="1.8"/><circle cx="11" cy="21" r="1.8"/><circle cx="21" cy="21" r="1.8"/></g></svg><span>Würfeln</span></button>
+      <div class="mini" id="hostHint">Erst wenn alle platziert haben, geht es weiter.</div>
+    </div>
+    <button id="undoBtn" class="btn undo-btn" disabled title="Letzten Eintrag entfernen und neu setzen"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5 3 10l5 5M4 10h10a6 6 0 0 1 0 12" transform="translate(0 -2)"/></svg><span>Korrigieren</span></button>
+  </div>
+</div>
+<div class="board-layout">
+  <div class="board-wrap">
+    <div id="board" class="grid"></div>
+
+  </div>
+  <div id="rowScores" class="row-scores" aria-label="Punkte der einzelnen Reihen">
+    <div>0</div><div>0</div><div>0</div><div>0</div><div>0</div>
+  </div>
+  <div id="columnScores" class="column-scores" aria-label="Punkte der einzelnen Spalten">
+    <div>0</div><div>0</div><div>0</div><div>0</div><div>0</div>
+  </div>
+  <div class="score-spacer" aria-hidden="true"></div>
+  <div id="diagonalScores" class="diagonal-scores" aria-label="Punkte der Diagonalen">
+    <div><small>↘ ×2</small><b>0</b></div>
+    <div><small>↙ ×2</small><b>0</b></div>
+  </div>
+</div>
+<div class="scoreline">
+<div class="scorebox"><small>Zeilen</small><b id="sRows">0</b></div>
+<div class="scorebox"><small>Spalten</small><b id="sCols">0</b></div>
+<div class="scorebox"><small>Diagonalen ×2</small><b id="sDiag">0</b></div>
+<div class="scorebox"><small>Gesamt</small><b id="sTotal">0</b></div>
+</div>
+<details class="rules-card">
+  <summary><span class="rules-icon">?</span><span><b>Spielregeln &amp; Wertung</b><small>Antippen zum Öffnen</small></span><span class="rules-chevron">⌄</span></summary>
+  <div class="rules-content">
+    <p>Jede gewürfelte Summe wird einmal in ein freies Feld eingetragen. Nach 25 Würfen ist der Block voll.</p>
+    <div class="rules-grid">
+      <span>Ein Paar <b>1</b></span><span>Zwei Paare <b>3</b></span>
+      <span>Dreierpasch <b>3</b></span><span>Viererpasch <b>6</b></span>
+      <span>Full House <b>8</b></span><span>Fünferpasch <b>10</b></span>
+      <span>Straße mit 7 <b>8</b></span><span>Straße ohne 7 <b>12</b></span>
+    </div>
+    <p class="rules-note">Die beiden Diagonalen zählen doppelt.</p>
+  </div>
+</details>
+</div>
+<div class="card status-card">
+<div id="winnerBox" class="winner hide"></div>
+<div class="section-title"><h2>Live-Stand</h2><small id="readyCount"></small></div>
+<div id="standings" class="standings"></div>
+<button id="newGameBtn" class="btn primary hide" style="width:100%;margin-top:14px">Neue Runde</button>
+<button id="exitGameBtn" class="btn" style="width:100%;margin-top:9px">Zurück zur Startseite</button>
+</div>
+</div>
+</section>
+<div id="themeModal" class="theme-modal hide" role="dialog" aria-modal="true" aria-labelledby="themeTitle">
+  <div class="theme-sheet">
+    <div class="theme-head"><div><div class="label">Deine Darstellung</div><h2 id="themeTitle">Wähle dein Spielthema</h2></div><button id="closeThemeBtn" class="modal-close" aria-label="Schließen">×</button></div>
+    <p class="theme-intro">Diese Auswahl gilt nur auf deinem Handy. Deine Mitspieler können ihr eigenes Design wählen.</p>
+    <div class="theme-options">
+      <button class="theme-choice" data-theme-choice="classic"><span class="theme-preview preview-classic"><i></i><i></i><i></i></span><span><b>Abendblau</b><small>Petrol, Nachtblau & Papier</small></span><em>✓</em></button>
+      <button class="theme-choice" data-theme-choice="space"><span class="theme-preview preview-space"><i></i><i></i><i></i></span><span><b>Space</b><small>Mitternachtsblau & Papier</small></span><em>✓</em></button>
+      <button class="theme-choice" data-theme-choice="nature"><span class="theme-preview preview-nature"><i></i><i></i><i></i></span><span><b>Natur</b><small>Salbeigrün & Papier</small></span><em>✓</em></button>
+    </div>
+  </div>
+</div>
+<footer class="foot"><span>ZAPPO · Gemeinsam würfeln.<br>Jeder auf seine Weise.</span><div class="publisher-mark"><img src="assets/ya5-games.webp" alt="YA5 Games" width="2000" height="800"></div></footer>
+</div>
+
+<img id="dicePaperTexture" src="assets/materials.webp" alt="" hidden>
+<script src="vendor/dice3d.min.js?v=6"></script>
+<script src="app.js?v=zappo9"></script>
+</body>
+</html>
