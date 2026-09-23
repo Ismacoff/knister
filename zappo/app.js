@@ -90,7 +90,7 @@ function openPeer(){
    if(role==='host'){
      if(!room.players[pid])room.players[pid]={id:pid,name:myName,score:0,filled:0,placed:false,host:true};
      setNet('Online');hideMsg('lobbyMsg');hideMsg('gameMsg');if(phase==='home')show('lobby');renderFromRoom();
-   }else connectToHost();
+   }else if(guestJoined&&hostConn?.open){setNet('Online');hideMsg('lobbyMsg');hideMsg('gameMsg')}else connectToHost();
  });
  current.on('connection',conn=>{if(active()&&role==='host')setupConn(conn)});
  current.on('disconnected',()=>{if(!active())return;signalReady=false;scheduleReconnect('Verbindung unterbrochen. Bitte ZAPPO geöffnet lassen – der Raum wird wieder verbunden.');});
